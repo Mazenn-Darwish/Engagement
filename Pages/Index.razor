@@ -1,0 +1,204 @@
+@page "/"
+@inject IJSRuntime JS
+@inject RsvpService RsvpService
+@implements IDisposable
+
+<canvas id="petalCanvas"></canvas>
+
+<main class="hero">
+    <div class="hero-content">
+
+        <p class="subtitle">You are cordially invited</p>
+
+        <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+        <div class="names">
+            <span class="name">Mazen</span>
+            <span class="ampersand">&amp;</span>
+            <span class="name">Doha</span>
+        </div>
+
+        <div class="divider">
+            <span class="divider-line"></span>
+            <span class="diamond">◆</span>
+            <span class="divider-line"></span>
+        </div>
+
+        <p class="getting-engaged">are getting engaged</p>
+
+        <div class="countdown">
+            <div class="countdown-unit">
+                <span class="count">@_days</span>
+                <span class="unit-label">Days</span>
+            </div>
+            <span class="sep">·</span>
+            <div class="countdown-unit">
+                <span class="count">@_hours.ToString("D2")</span>
+                <span class="unit-label">Hours</span>
+            </div>
+            <span class="sep">·</span>
+            <div class="countdown-unit">
+                <span class="count">@_minutes.ToString("D2")</span>
+                <span class="unit-label">Minutes</span>
+            </div>
+            <span class="sep">·</span>
+            <div class="countdown-unit">
+                <span class="count">@_seconds.ToString("D2")</span>
+                <span class="unit-label">Seconds</span>
+            </div>
+        </div>
+
+        <p class="date-line">11 &nbsp;·&nbsp; September &nbsp;·&nbsp; 2026</p>
+
+        <button class="rsvp-btn" @onclick="OpenModal">RSVP</button>
+
+    </div>
+</main>
+
+@if (_modalOpen)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal-box" @onclick:stopPropagation="true">
+
+            @if (_submitted)
+            {
+                <div class="thank-you">
+                    <p class="ty-ornament">✦</p>
+                    <h2>Thank You, @_model.FullName!</h2>
+                    <p>Your response has been received.</p>
+                    <p>We look forward to celebrating with you.</p>
+                    <button class="rsvp-btn" @onclick="CloseModal" style="margin-top:1.8rem">Close</button>
+                </div>
+            }
+            else
+            {
+                <h2 class="modal-title">RSVP</h2>
+
+                <EditForm Model="_model" OnValidSubmit="HandleSubmit">
+                    <DataAnnotationsValidator />
+
+                    <div class="form-field">
+                        <label>Full Name</label>
+                        <InputText @bind-Value="_model.FullName" placeholder="Your full name" />
+                        <ValidationMessage For="@(() => _model.FullName)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Email</label>
+                        <InputText @bind-Value="_model.Email" placeholder="your@email.com" type="email" />
+                        <ValidationMessage For="@(() => _model.Email)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Attendance</label>
+                        <InputRadioGroup @bind-Value="_model.Attending" class="radio-group">
+                            <label class="radio-label">
+                                <InputRadio Value="@("yes")" /> Joyfully accepts
+                            </label>
+                            <label class="radio-label">
+                                <InputRadio Value="@("no")" /> Regretfully declines
+                            </label>
+                        </InputRadioGroup>
+                        <ValidationMessage For="@(() => _model.Attending)" />
+                    </div>
+
+                    @if (_model.Attending == "yes")
+                    {
+                        <div class="form-field">
+                            <label>Number of Guests</label>
+                            <InputNumber @bind-Value="_model.GuestCount" min="1" max="10" />
+                            <ValidationMessage For="@(() => _model.GuestCount)" />
+                        </div>
+                    }
+
+                    <div class="form-field">
+                        <label>Note <span class="optional">(optional)</span></label>
+                        <InputTextArea @bind-Value="_model.Note" placeholder="Any message or dietary requirements…" rows="3" />
+                    </div>
+
+                    @if (_submitError)
+                    {
+                        <p class="submit-error">Something went wrong. Please try again.</p>
+                    }
+
+                    <button type="submit" class="rsvp-btn submit-btn" disabled="@_submitting">
+                        @(_submitting ? "Sending…" : "Send RSVP")
+                    </button>
+                </EditForm>
+            }
+
+        </div>
+    </div>
+}
+
+@code {
+    private static readonly DateTime EngagementDate = new DateTime(2026, 9, 11, 18, 0, 0, DateTimeKind.Local);
+
+    private int _days, _hours, _minutes, _seconds;
+    private System.Threading.Timer? _timer;
+
+    private bool _modalOpen;
+    private bool _submitted;
+    private bool _submitting;
+    private bool _submitError;
+    private RsvpModel _model = new();
+
+    protected override void OnInitialized()
+    {
+        UpdateCountdown();
+        _timer = new System.Threading.Timer(_ =>
+        {
+            UpdateCountdown();
+            InvokeAsync(StateHasChanged);
+        }, null, 1000, 1000);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("initPetals");
+            await JS.InvokeVoidAsync("hideLoader");
+        }
+    }
+
+    private void UpdateCountdown()
+    {
+        var remaining = EngagementDate - DateTime.Now;
+        if (remaining <= TimeSpan.Zero)
+        {
+            _days = _hours = _minutes = _seconds = 0;
+        }
+        else
+        {
+            _days    = (int)remaining.TotalDays;
+            _hours   = remaining.Hours;
+            _minutes = remaining.Minutes;
+            _seconds = remaining.Seconds;
+        }
+    }
+
+    private void OpenModal()
+    {
+        _model       = new RsvpModel();
+        _submitted   = false;
+        _submitError = false;
+        _modalOpen   = true;
+    }
+
+    private void CloseModal() => _modalOpen = false;
+
+    private async Task HandleSubmit()
+    {
+        _submitting  = true;
+        _submitError = false;
+        var success = await RsvpService.SubmitAsync(_model);
+        _submitting = false;
+        if (success)
+            _submitted = true;
+        else
+            _submitError = true;
+    }
+
+    public void Dispose() => _timer?.Dispose();
+}
