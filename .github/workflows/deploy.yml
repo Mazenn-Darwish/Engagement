@@ -32,10 +32,18 @@ jobs:
       - name: Publish
         run: dotnet publish -c Release -o publish
 
+      - name: Verify publish output
+        run: |
+          echo "=== publish/wwwroot/ top-level ==="
+          ls -la publish/wwwroot/
+          echo "=== _framework files ==="
+          ls publish/wwwroot/_framework/ | head -10
+
       - name: Patch base href for GitHub Pages sub-path
         # Replace <base href="/" /> with the repo name so assets resolve correctly
         run: |
           sed -i 's|<base href="/" />|<base href="/engagement/" />|g' publish/wwwroot/index.html
+          grep 'base href' publish/wwwroot/index.html
 
       - name: Prevent Jekyll from ignoring _framework
         run: touch publish/wwwroot/.nojekyll
