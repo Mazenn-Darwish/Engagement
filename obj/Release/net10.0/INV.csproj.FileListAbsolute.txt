@@ -206,9 +206,6 @@ C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\dotnet.runtime
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat
-C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\INV.tb9cu2xe4h.wasm
-C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\INV.dwuycfjf2c.pdb
-C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\dotnet.z5gau0hlfm.js
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\blazor.webassembly.66stpp682q.js.gz
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\Microsoft.AspNetCore.Authorization.roqc1km2rj.wasm.gz
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\Microsoft.AspNetCore.Components.uddsvpv1sv.wasm.gz
@@ -416,9 +413,6 @@ C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\dotnet.runtime
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat.gz
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat.gz
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat.gz
-C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\INV.tb9cu2xe4h.wasm.gz
-C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\INV.dwuycfjf2c.pdb.gz
-C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\dotnet.z5gau0hlfm.js.gz
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\INV.staticwebassets.runtime.json
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\INV.staticwebassets.endpoints.json
 C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\INV.dll
@@ -1055,10 +1049,6 @@ C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\0xugjeb75k-{0}-v2jj96i
 C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\ueb1f12nws-{0}-tjcz0u77k5-tjcz0u77k5.gz
 C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\vu8738hjxr-{0}-tptq2av103-tptq2av103.gz
 C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\2mhwsoq606-{0}-lfu7j35m59-lfu7j35m59.gz
-C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\s473rw8zuj-{0}-tb9cu2xe4h-tb9cu2xe4h.gz
-C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\k8r1vmtacm-{0}-dwuycfjf2c-dwuycfjf2c.gz
-C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\zs6vees92b-{0}-z5gau0hlfm-z5gau0hlfm.gz
-C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\m7gnsq6lbv-{0}-k8xtl3ec95-k8xtl3ec95.gz
 C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\staticwebassets.build.json
 C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\staticwebassets.build.json.cache
 C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\staticwebassets.development.json
@@ -1069,3 +1059,14 @@ C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\INV.dll
 C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\refint\INV.dll
 C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\INV.pdb
 C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\ref\INV.dll
+C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\INV.0zydx3tm3f.wasm
+C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\INV.3tanfjnqh4.pdb
+C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\dotnet.j9y9ghrvan.js
+C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\INV.0zydx3tm3f.wasm.gz
+C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\INV.3tanfjnqh4.pdb.gz
+C:\Users\Mazen\Desktop\INV\bin\Release\net10.0\wwwroot\_framework\dotnet.j9y9ghrvan.js.gz
+C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\INV.sourcelink.json
+C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\s473rw8zuj-{0}-0zydx3tm3f-0zydx3tm3f.gz
+C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\k8r1vmtacm-{0}-3tanfjnqh4-3tanfjnqh4.gz
+C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\zs6vees92b-{0}-j9y9ghrvan-j9y9ghrvan.gz
+C:\Users\Mazen\Desktop\INV\obj\Release\net10.0\compressed\m7gnsq6lbv-{0}-ex8x48sof3-ex8x48sof3.gz

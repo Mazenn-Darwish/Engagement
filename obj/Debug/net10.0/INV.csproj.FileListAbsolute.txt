@@ -216,9 +216,6 @@ C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\dotnet.runtime.j
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat
-C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\INV.a9hx49jg8m.wasm
-C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\INV.xpeev2d5xc.pdb
-C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\dotnet.pc7l3x04k7.js
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\blazor.webassembly.66stpp682q.js.gz
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\Microsoft.AspNetCore.Authorization.roqc1km2rj.wasm.gz
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\Microsoft.AspNetCore.Components.uddsvpv1sv.wasm.gz
@@ -427,9 +424,6 @@ C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\dotnet.runtime.j
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat.gz
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat.gz
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat.gz
-C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\INV.a9hx49jg8m.wasm.gz
-C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\INV.xpeev2d5xc.pdb.gz
-C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\dotnet.pc7l3x04k7.js.gz
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\INV.staticwebassets.runtime.json
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\INV.staticwebassets.endpoints.json
 C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\INV.dll
@@ -851,8 +845,6 @@ C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\blazor.build.boot-extension.json
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\dotnet.js
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\staticwebassets\htmlassetplaceholders\build\f2194u4ido.html
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\f9o902iofb-{0}-99zm1jdh75-99zm1jdh75.gz
-C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\hnt0ubq4w7-{0}-faky5qql58-faky5qql58.gz
-C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\a6kkzmqmpx-{0}-6072srcqt9-6072srcqt9.gz
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\5j1e4buuua-{0}-66stpp682q-66stpp682q.gz
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\4ezbmqbamt-{0}-roqc1km2rj-roqc1km2rj.gz
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\yiicm8oqhs-{0}-uddsvpv1sv-uddsvpv1sv.gz
@@ -1061,10 +1053,6 @@ C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\0xugjeb75k-{0}-v2jj96ink
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\ueb1f12nws-{0}-tjcz0u77k5-tjcz0u77k5.gz
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\vu8738hjxr-{0}-tptq2av103-tptq2av103.gz
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\2mhwsoq606-{0}-lfu7j35m59-lfu7j35m59.gz
-C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\s473rw8zuj-{0}-a9hx49jg8m-a9hx49jg8m.gz
-C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\k8r1vmtacm-{0}-xpeev2d5xc-xpeev2d5xc.gz
-C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\zs6vees92b-{0}-pc7l3x04k7-pc7l3x04k7.gz
-C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\m7gnsq6lbv-{0}-5mf201iq7u-5mf201iq7u.gz
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\staticwebassets.development.json
@@ -1075,3 +1063,16 @@ C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\INV.dll
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\refint\INV.dll
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\INV.pdb
 C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\ref\INV.dll
+C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\INV.sourcelink.json
+C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\a6kkzmqmpx-{0}-6wg45ofytb-6wg45ofytb.gz
+C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\hnt0ubq4w7-{0}-mvo8e5gj3c-mvo8e5gj3c.gz
+C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\INV.9prkwvlqv4.wasm
+C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\INV.cutp4w5a76.pdb
+C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\dotnet.53ernrwdnh.js
+C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\INV.9prkwvlqv4.wasm.gz
+C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\INV.cutp4w5a76.pdb.gz
+C:\Users\Mazen\Desktop\INV\bin\Debug\net10.0\wwwroot\_framework\dotnet.53ernrwdnh.js.gz
+C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\s473rw8zuj-{0}-9prkwvlqv4-9prkwvlqv4.gz
+C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\k8r1vmtacm-{0}-cutp4w5a76-cutp4w5a76.gz
+C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\zs6vees92b-{0}-53ernrwdnh-53ernrwdnh.gz
+C:\Users\Mazen\Desktop\INV\obj\Debug\net10.0\compressed\m7gnsq6lbv-{0}-gex3rjwdzz-gex3rjwdzz.gz

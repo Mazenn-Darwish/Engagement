@@ -5,11 +5,17 @@ namespace INV.Services;
 
 public class SongService(HttpClient http)
 {
-    // TODO: Same Google Apps Script Web App URL as RsvpService
+    // Paste your Google Apps Script Web App URL here to save to Google Sheets.
+    // Leave as-is and submissions still succeed locally (no data persisted to a sheet).
     private const string WebhookUrl = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
+
+    private static bool IsConfigured =>
+        !WebhookUrl.Contains("1QhJfs-GgZuBUDpLUWRrsLkRhBAYDCIjJWwnWJkQENxEaqpWMuTDlNQDw");
 
     public async Task<bool> SubmitAsync(SongModel model)
     {
+        if (!IsConfigured) return true; // demo mode — UI works, nothing saved remotely
+
         try
         {
             var payload = new
