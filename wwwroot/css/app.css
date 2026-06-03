@@ -152,8 +152,8 @@ html, body {
 
 /* ─── Couple photo ───────────────────────────────────────── */
 .couple-photo {
-    width: clamp(120px, 22vw, 200px);
-    height: clamp(120px, 22vw, 200px);
+    width: clamp(140px, 26vw, 300px);
+    height: clamp(140px, 26vw, 300px);
     border-radius: 50%;
     border: 2.5px solid var(--green-dk);
     object-fit: cover;
