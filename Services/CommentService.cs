@@ -10,7 +10,7 @@ public class CommentService(HttpClient http)
     private const string WebhookUrl = "https://script.google.com/macros/s/1ulhW1fyq6tGiWwxRYStHzdnkrJXOpGtsvYHWS9zbKd5Kt2H2yc4hos6x/exec";
 
     private static bool IsConfigured =>
-        !WebhookUrl.Contains("1ulhW1fyq6tGiWwxRYStHzdnkrJXOpGtsvYHWS9zbKd5Kt2H2yc4hos6x");
+        !WebhookUrl.Contains("YOUR_SCRIPT_ID_HERE");
 
     public async Task<bool> SubmitAsync(CommentModel model)
     {
