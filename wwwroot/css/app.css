@@ -150,6 +150,28 @@ html, body {
     text-align: center;
 }
 
+/* ─── Couple photo ───────────────────────────────────────── */
+.couple-photo {
+    width: clamp(120px, 22vw, 200px);
+    height: clamp(120px, 22vw, 200px);
+    border-radius: 50%;
+    border: 2.5px solid var(--green-dk);
+    object-fit: cover;
+    box-shadow: 0 6px 28px rgba(45, 90, 39, 0.18);
+    animation: photoPulse 4s ease-in-out infinite;
+}
+
+@keyframes photoPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 6px 28px rgba(45, 90, 39, 0.18);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 8px 36px rgba(45, 90, 39, 0.28);
+    }
+}
+
 /* ─── Divider ────────────────────────────────────────────── */
 .divider {
     display: flex;
@@ -854,6 +876,7 @@ html, body {
 .hero-content > .engagement-word { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 0.6s; }
 .hero-content > .ornament        { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 0.8s; }
 .hero-content > .names           { animation: fadeSlideUp 0.9s ease-out both; animation-delay: 1.0s; }
+.hero-content > .couple-photo    { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 1.12s; }
 .hero-content > .divider         { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 1.25s; }
 .hero-content > .getting-engaged { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 1.4s; }
 .hero-content > .countdown       { animation: fadeSlideUp 0.7s ease-out both; animation-delay: 1.6s; }
