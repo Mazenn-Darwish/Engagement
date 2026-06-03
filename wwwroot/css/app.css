@@ -86,7 +86,7 @@ html, body {
 /* ─── Bismillah ──────────────────────────────────────────── */
 .bismillah {
     font-family: var(--font-arabic);
-    font-size: clamp(1.6rem, 4.5vw, 2.6rem);
+    font-size: clamp(1.8rem, 5vw, 2.9rem);
     color: var(--green-dk);
     font-weight: 500;
     letter-spacing: 0.02em;

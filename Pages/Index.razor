@@ -331,21 +331,6 @@
     </div>
 }
 
-@if (_comments.Count > 0)
-{
-    <div class="comments-ticker" aria-hidden="true">
-        <div class="ticker-track">
-            @foreach (var (name, msg) in _comments)
-            {
-                <span class="ticker-item">✦ &nbsp; <em>@msg</em> &nbsp; — @name &ensp;</span>
-            }
-            @foreach (var (name, msg) in _comments)
-            {
-                <span class="ticker-item">✦ &nbsp; <em>@msg</em> &nbsp; — @name &ensp;</span>
-            }
-        </div>
-    </div>
-}
 
 @code {
     private static readonly DateTime EngagementDate = new DateTime(2026, 9, 11, 18, 0, 0, DateTimeKind.Local);
