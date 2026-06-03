@@ -1,6 +1,7 @@
 @page "/"
 @inject IJSRuntime JS
 @inject SongService SongService
+@inject MusicSearchService MusicSearch
 @inject CommentService CommentService
 @implements IDisposable
 
@@ -199,7 +200,39 @@
             else
             {
                 <h2 class="modal-title">♪ &nbsp; Suggest a Song</h2>
-                <p class="modal-subtitle">Help us build the perfect playlist for the night</p>
+                <p class="modal-subtitle">Search for a song to add to our playlist</p>
+
+                <!-- Search input lives outside EditForm so Enter key doesn't submit -->
+                <div class="form-field">
+                    <label>Search for a Song</label>
+                    <div class="search-input-wrap">
+                        <input class="search-input" type="text"
+                               value="@_searchQuery"
+                               @oninput="OnSearchInput"
+                               placeholder="Song name or artist…"
+                               autocomplete="off" />
+                        @if (_isSearching) { <span class="search-spinner">⟳</span> }
+                    </div>
+                </div>
+
+                @if (_searchResults.Count > 0)
+                {
+                    <ul class="search-results">
+                        @foreach (var r in _searchResults)
+                        {
+                            <li class="search-result" @onclick="() => SelectSong(r)">
+                                @if (!string.IsNullOrEmpty(r.AlbumArt))
+                                {
+                                    <img src="@r.AlbumArt" class="result-art" alt="" />
+                                }
+                                <div class="result-info">
+                                    <span class="result-title">@r.Title</span>
+                                    <span class="result-artist">@r.Artist</span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
 
                 <EditForm Model="_song" OnValidSubmit="HandleSongSubmit">
                     <DataAnnotationsValidator />
@@ -210,17 +243,24 @@
                         <ValidationMessage For="@(() => _song.GuestName)" />
                     </div>
 
-                    <div class="form-field">
-                        <label>Song Title</label>
-                        <InputText @bind-Value="_song.SongTitle" placeholder="e.g. A Thousand Years" />
+                    @if (_selectedResult is not null)
+                    {
+                        <div class="selected-preview">
+                            @if (!string.IsNullOrEmpty(_selectedResult.AlbumArt))
+                            {
+                                <img src="@_selectedResult.AlbumArt" class="preview-art" alt="" />
+                            }
+                            <div class="preview-text">
+                                <span class="preview-title">@_selectedResult.Title</span>
+                                <span class="preview-artist">@_selectedResult.Artist</span>
+                            </div>
+                            <button type="button" class="preview-clear" @onclick="ClearSong" title="Change song">✕</button>
+                        </div>
+                    }
+                    else
+                    {
                         <ValidationMessage For="@(() => _song.SongTitle)" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Artist</label>
-                        <InputText @bind-Value="_song.Artist" placeholder="e.g. Christina Perri" />
-                        <ValidationMessage For="@(() => _song.Artist)" />
-                    </div>
+                    }
 
                     <div class="form-field">
                         <label>Why this song? <span class="optional">(optional)</span></label>
@@ -319,6 +359,12 @@
     private bool _songError;
     private SongModel _song = new();
 
+    private string _searchQuery = "";
+    private List<SongSearchResult> _searchResults = [];
+    private SongSearchResult? _selectedResult;
+    private CancellationTokenSource _searchCts = new();
+    private bool _isSearching;
+
     private bool _commentOpen;
     private bool _commentSubmitted;
     private bool _commentSubmitting;
@@ -365,13 +411,56 @@
 
     private void OpenSongModal()
     {
-        _song          = new SongModel();
-        _songSubmitted = false;
-        _songError     = false;
-        _songOpen      = true;
+        _song           = new SongModel();
+        _songSubmitted  = false;
+        _songError      = false;
+        _searchQuery    = "";
+        _searchResults  = [];
+        _selectedResult = null;
+        _songOpen       = true;
     }
 
     private void CloseSongModal() => _songOpen = false;
+
+    private async Task OnSearchInput(ChangeEventArgs e)
+    {
+        _searchQuery    = e.Value?.ToString() ?? "";
+        _selectedResult = null;
+        _song.SongTitle = "";
+        _song.Artist    = "";
+        _searchResults  = [];
+
+        _searchCts.Cancel();
+        _searchCts = new CancellationTokenSource();
+
+        if (_searchQuery.Length < 2) return;
+
+        try
+        {
+            _isSearching = true;
+            await Task.Delay(420, _searchCts.Token);
+            _searchResults = await MusicSearch.SearchAsync(_searchQuery);
+        }
+        catch (OperationCanceledException) { }
+        finally { _isSearching = false; }
+    }
+
+    private void SelectSong(SongSearchResult result)
+    {
+        _selectedResult  = result;
+        _song.SongTitle  = result.Title;
+        _song.Artist     = result.Artist;
+        _searchResults   = [];
+        _searchQuery     = "";
+    }
+
+    private void ClearSong()
+    {
+        _selectedResult  = null;
+        _song.SongTitle  = "";
+        _song.Artist     = "";
+        _searchQuery     = "";
+    }
 
     private async Task HandleSongSubmit()
     {
@@ -434,5 +523,7 @@
     {
         _cts.Cancel();
         _cts.Dispose();
+        _searchCts.Cancel();
+        _searchCts.Dispose();
     }
 }

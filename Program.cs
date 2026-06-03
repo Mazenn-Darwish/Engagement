@@ -9,6 +9,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient());
 builder.Services.AddScoped<SongService>();
+builder.Services.AddScoped<MusicSearchService>();
 builder.Services.AddScoped<CommentService>();
 
 await builder.Build().RunAsync();
