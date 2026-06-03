@@ -90,6 +90,7 @@ html, body {
     font-weight: 500;
     letter-spacing: 0.02em;
     line-height: 1.5;
+    margin-top: clamp(0.6rem, 2vh, 1.2rem);
     margin-bottom: 0.1rem;
 }
 
@@ -141,10 +142,12 @@ html, body {
 
 .ampersand {
     font-family: var(--font-script);
-    font-size: clamp(1.8rem, 5vw, 3.5rem);
+    font-size: clamp(2.4rem, 6.5vw, 5rem);
     color: var(--green-md);
-    line-height: 1.2;
+    line-height: 0.9;
     font-weight: 400;
+    display: block;
+    text-align: center;
 }
 
 /* ─── Divider ────────────────────────────────────────────── */
@@ -311,6 +314,63 @@ html, body {
     box-shadow: none;
 }
 
+/* ─── Two-button action row ──────────────────────────────── */
+.action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 0.3rem;
+}
+
+.action-row .rsvp-btn { margin-top: 0; }
+
+.rsvp-btn--outline {
+    background: transparent;
+    color: var(--green-dk);
+    border: 1.5px solid var(--green-dk);
+    box-shadow: none;
+}
+
+.rsvp-btn--outline:hover {
+    background: rgba(45, 90, 39, 0.07);
+    box-shadow: 0 3px 14px rgba(45, 90, 39, 0.14);
+}
+
+/* ─── Comments ticker ────────────────────────────────────── */
+.comments-ticker {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    padding: 0.55rem 0 0.6rem;
+    background: linear-gradient(transparent, rgba(245, 239, 230, 0.94) 28%);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.ticker-track {
+    display: flex;
+    width: max-content;
+    animation: tickerScroll 28s linear infinite;
+}
+
+.ticker-item {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: clamp(0.75rem, 1.6vw, 0.88rem);
+    color: var(--green-dk);
+    opacity: 0.72;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+@keyframes tickerScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
 /* ─── Modal overlay ──────────────────────────────────────── */
 .modal-overlay {
     position: fixed;
@@ -346,6 +406,49 @@ html, body {
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-subtitle {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: clamp(0.85rem, 1.8vw, 1rem);
+    color: var(--green-md);
+    text-align: center;
+    margin-top: -1rem;
+    margin-bottom: 1.4rem;
+    font-weight: 300;
+}
+
+.song-added-label {
+    font-family: var(--font-script);
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    color: var(--green-dk);
+    line-height: 1.2;
+    margin-bottom: 0.1rem;
+}
+
+.song-added-by {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    color: var(--green-md);
+    margin-bottom: 0.6rem;
+}
+
+.song-added-sub {
+    font-family: var(--font-display);
+    font-size: clamp(0.6rem, 1.3vw, 0.75rem);
+    letter-spacing: 0.2em;
+    color: var(--green-md);
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+.song-added-thanks {
+    font-family: var(--font-body);
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    color: var(--text);
+    font-style: italic;
 }
 
 .modal-title {
@@ -599,7 +702,7 @@ html, body {
 .hero-content > .date-line       { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 1.8s; }
 .hero-content > .venue           { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 1.95s; }
 .hero-content > .calendar-btn    { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 2.1s; }
-.hero-content > .rsvp-btn        { animation: fadeSlideUp 0.7s ease-out both; animation-delay: 2.25s; }
+.hero-content > .action-row      { animation: fadeSlideUp 0.7s ease-out both; animation-delay: 2.25s; }
 
 /* ─── Mobile tweaks ──────────────────────────────────────── */
 @media (max-height: 700px) {

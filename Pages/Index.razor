@@ -1,11 +1,12 @@
 @page "/"
 @inject IJSRuntime JS
-@inject RsvpService RsvpService
+@inject SongService SongService
+@inject CommentService CommentService
 @implements IDisposable
 
 <canvas id="petalCanvas"></canvas>
 
-<!-- Botanical corner decorations — same SVG, mirrored via CSS transform -->
+<!-- Botanical corner decorations -->
 <div class="corner corner-tl" aria-hidden="true">
     <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
         <g stroke="#2d5a27" stroke-linecap="round" stroke-linejoin="round" opacity="0.82">
@@ -123,12 +124,7 @@
 
         <div class="names">
             <span class="name">Mazen</span>
-            <svg class="amp-svg" viewBox="0 0 52 68" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="and">
-                <path d="M 38,14 C 40,6 28,2 20,8 C 12,14 12,26 20,32 C 26,36 34,40 36,48 C 38,56 34,64 26,67 C 18,70 10,64 10,56 C 10,50 14,46 20,44 C 28,42 40,40 44,32 C 48,24 44,14 38,12"
-                      stroke="#2d5a27" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M 34,58 C 40,54 48,58 46,65"
-                      stroke="#2d5a27" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
+            <span class="ampersand">&amp;</span>
             <span class="name">Doha</span>
         </div>
 
@@ -176,83 +172,137 @@
 
         <button class="calendar-btn" @onclick="DownloadCalendar">+ Add to Calendar</button>
 
-        <button class="rsvp-btn" @onclick="OpenModal">RSVP</button>
+        <div class="action-row">
+            <button class="rsvp-btn" @onclick="OpenSongModal">♪ &nbsp; Suggest a Song</button>
+            <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenCommentModal">✦ &nbsp; Leave us a comment!</button>
+        </div>
 
     </div>
 </main>
 
-@if (_modalOpen)
+@if (_songOpen)
 {
-    <div class="modal-overlay" @onclick="CloseModal">
+    <div class="modal-overlay" @onclick="CloseSongModal">
         <div class="modal-box" @onclick:stopPropagation="true">
 
-            @if (_submitted)
+            @if (_songSubmitted)
             {
                 <div class="thank-you">
-                    <p class="ty-ornament">✦</p>
-                    <h2>Thank You, @_model.FullName!</h2>
-                    <p>Your response has been received.</p>
-                    <p>We look forward to celebrating with you.</p>
-                    <button class="rsvp-btn" @onclick="CloseModal" style="margin-top:1.8rem">Close</button>
+                    <p class="ty-ornament">♪</p>
+                    <p class="song-added-label">"@_song.SongTitle"</p>
+                    <p class="song-added-by">by @_song.Artist</p>
+                    <p class="song-added-sub">has been added to the playlist ✦</p>
+                    <p class="song-added-thanks">Thank you, @_song.GuestName!</p>
+                    <button class="rsvp-btn" @onclick="CloseSongModal" style="margin-top:1.8rem">Close</button>
                 </div>
             }
             else
             {
-                <h2 class="modal-title">RSVP</h2>
+                <h2 class="modal-title">♪ &nbsp; Suggest a Song</h2>
+                <p class="modal-subtitle">Help us build the perfect playlist for the night</p>
 
-                <EditForm Model="_model" OnValidSubmit="HandleSubmit">
+                <EditForm Model="_song" OnValidSubmit="HandleSongSubmit">
                     <DataAnnotationsValidator />
 
                     <div class="form-field">
-                        <label>Full Name</label>
-                        <InputText @bind-Value="_model.FullName" placeholder="Your full name" />
-                        <ValidationMessage For="@(() => _model.FullName)" />
+                        <label>Your Name</label>
+                        <InputText @bind-Value="_song.GuestName" placeholder="Your full name" />
+                        <ValidationMessage For="@(() => _song.GuestName)" />
                     </div>
 
                     <div class="form-field">
-                        <label>Email</label>
-                        <InputText @bind-Value="_model.Email" placeholder="your@email.com" type="email" />
-                        <ValidationMessage For="@(() => _model.Email)" />
+                        <label>Song Title</label>
+                        <InputText @bind-Value="_song.SongTitle" placeholder="e.g. A Thousand Years" />
+                        <ValidationMessage For="@(() => _song.SongTitle)" />
                     </div>
 
                     <div class="form-field">
-                        <label>Attendance</label>
-                        <InputRadioGroup @bind-Value="_model.Attending" class="radio-group">
-                            <label class="radio-label">
-                                <InputRadio Value="@("yes")" /> Joyfully accepts
-                            </label>
-                            <label class="radio-label">
-                                <InputRadio Value="@("no")" /> Regretfully declines
-                            </label>
-                        </InputRadioGroup>
-                        <ValidationMessage For="@(() => _model.Attending)" />
+                        <label>Artist</label>
+                        <InputText @bind-Value="_song.Artist" placeholder="e.g. Christina Perri" />
+                        <ValidationMessage For="@(() => _song.Artist)" />
                     </div>
-
-                    @if (_model.Attending == "yes")
-                    {
-                        <div class="form-field">
-                            <label>Number of Guests</label>
-                            <InputNumber @bind-Value="_model.GuestCount" min="1" max="10" />
-                            <ValidationMessage For="@(() => _model.GuestCount)" />
-                        </div>
-                    }
 
                     <div class="form-field">
-                        <label>Note <span class="optional">(optional)</span></label>
-                        <InputTextArea @bind-Value="_model.Note" placeholder="Any message or dietary requirements…" rows="3" />
+                        <label>Why this song? <span class="optional">(optional)</span></label>
+                        <InputTextArea @bind-Value="_song.Note" placeholder="Tell us why you love it…" rows="2" />
                     </div>
 
-                    @if (_submitError)
+                    @if (_songError)
                     {
                         <p class="submit-error">Something went wrong. Please try again.</p>
                     }
 
-                    <button type="submit" class="rsvp-btn submit-btn" disabled="@_submitting">
-                        @(_submitting ? "Sending…" : "Send RSVP")
+                    <button type="submit" class="rsvp-btn submit-btn" disabled="@_songSubmitting">
+                        @(_songSubmitting ? "Adding…" : "Add to Playlist")
                     </button>
                 </EditForm>
             }
 
+        </div>
+    </div>
+}
+
+@if (_commentOpen)
+{
+    <div class="modal-overlay" @onclick="CloseCommentModal">
+        <div class="modal-box" @onclick:stopPropagation="true">
+
+            @if (_commentSubmitted)
+            {
+                <div class="thank-you">
+                    <p class="ty-ornament">✦</p>
+                    <h2>Thank you, @_comment.GuestName!</h2>
+                    <p>Your comment has been noted with love.</p>
+                    <button class="rsvp-btn" @onclick="CloseCommentModal" style="margin-top:1.8rem">Close</button>
+                </div>
+            }
+            else
+            {
+                <h2 class="modal-title">✦ &nbsp; Leave us a comment!</h2>
+                <p class="modal-subtitle">A kind word means the world to us</p>
+
+                <EditForm Model="_comment" OnValidSubmit="HandleCommentSubmit">
+                    <DataAnnotationsValidator />
+
+                    <div class="form-field">
+                        <label>Your Name</label>
+                        <InputText @bind-Value="_comment.GuestName" placeholder="Your full name" />
+                        <ValidationMessage For="@(() => _comment.GuestName)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Your Comment</label>
+                        <InputTextArea @bind-Value="_comment.Message" placeholder="Leave Mazen & Doha a message…" rows="3" />
+                        <ValidationMessage For="@(() => _comment.Message)" />
+                    </div>
+
+                    @if (_commentError)
+                    {
+                        <p class="submit-error">Something went wrong. Please try again.</p>
+                    }
+
+                    <button type="submit" class="rsvp-btn submit-btn" disabled="@_commentSubmitting">
+                        @(_commentSubmitting ? "Sending…" : "Send Comment")
+                    </button>
+                </EditForm>
+            }
+
+        </div>
+    </div>
+}
+
+@if (_comments.Count > 0)
+{
+    <div class="comments-ticker" aria-hidden="true">
+        <div class="ticker-track">
+            @foreach (var (name, msg) in _comments)
+            {
+                <span class="ticker-item">✦ &nbsp; <em>@msg</em> &nbsp; — @name &ensp;</span>
+            }
+            @foreach (var (name, msg) in _comments)
+            {
+                <span class="ticker-item">✦ &nbsp; <em>@msg</em> &nbsp; — @name &ensp;</span>
+            }
         </div>
     </div>
 }
@@ -263,11 +313,18 @@
     private int _days, _hours, _minutes, _seconds;
     private CancellationTokenSource _cts = new();
 
-    private bool _modalOpen;
-    private bool _submitted;
-    private bool _submitting;
-    private bool _submitError;
-    private RsvpModel _model = new();
+    private bool _songOpen;
+    private bool _songSubmitted;
+    private bool _songSubmitting;
+    private bool _songError;
+    private SongModel _song = new();
+
+    private bool _commentOpen;
+    private bool _commentSubmitted;
+    private bool _commentSubmitting;
+    private bool _commentError;
+    private CommentModel _comment = new();
+    private List<(string Name, string Message)> _comments = new();
 
     protected override void OnInitialized()
     {
@@ -296,9 +353,7 @@
     {
         var remaining = EngagementDate - DateTime.Now;
         if (remaining <= TimeSpan.Zero)
-        {
             _days = _hours = _minutes = _seconds = 0;
-        }
         else
         {
             _days    = (int)remaining.TotalDays;
@@ -308,31 +363,53 @@
         }
     }
 
-    private void OpenModal()
+    private void OpenSongModal()
     {
-        _model       = new RsvpModel();
-        _submitted   = false;
-        _submitError = false;
-        _modalOpen   = true;
+        _song          = new SongModel();
+        _songSubmitted = false;
+        _songError     = false;
+        _songOpen      = true;
     }
 
-    private void CloseModal() => _modalOpen = false;
+    private void CloseSongModal() => _songOpen = false;
 
-    private async Task HandleSubmit()
+    private async Task HandleSongSubmit()
     {
-        _submitting  = true;
-        _submitError = false;
-        var success = await RsvpService.SubmitAsync(_model);
-        _submitting = false;
+        _songSubmitting = true;
+        _songError      = false;
+        var success = await SongService.SubmitAsync(_song);
+        _songSubmitting = false;
+        if (success) _songSubmitted = true;
+        else         _songError     = true;
+    }
+
+    private void OpenCommentModal()
+    {
+        _comment          = new CommentModel();
+        _commentSubmitted = false;
+        _commentError     = false;
+        _commentOpen      = true;
+    }
+
+    private void CloseCommentModal() => _commentOpen = false;
+
+    private async Task HandleCommentSubmit()
+    {
+        _commentSubmitting = true;
+        _commentError      = false;
+        var success = await CommentService.SubmitAsync(_comment);
+        _commentSubmitting = false;
         if (success)
-            _submitted = true;
-        else
-            _submitError = true;
+        {
+            _comments.Add((_comment.GuestName, _comment.Message));
+            _commentSubmitted = true;
+        }
+        else _commentError = true;
     }
 
     private async Task DownloadCalendar()
     {
-        var nl = "\r\n";
+        var nl  = "\r\n";
         var uid = Guid.NewGuid().ToString("N");
         var ics = string.Join(nl,
             "BEGIN:VCALENDAR",

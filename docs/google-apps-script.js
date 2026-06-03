@@ -11,13 +11,39 @@
  *  5. Re-deploy after any code change (use "Manage deployments" → edit the existing one).
  */
 
-const SHEET_NAME = 'RSVPs';
-const HEADERS    = ['Timestamp', 'Full Name', 'Email', 'Attending', 'Guests', 'Note'];
+const RSVP_SHEET     = 'RSVPs';
+const SONG_SHEET     = 'Songs';
+const BLESSING_SHEET = 'Blessings';
+const RSVP_HEADERS = ['Timestamp', 'Full Name', 'Email', 'Attending', 'Guests', 'Note'];
+const SONG_HEADERS = ['Timestamp', 'Guest Name', 'Song Title', 'Artist', 'Why This Song'];
+
+// Keep old name as alias so any existing code still works
+const SHEET_NAME = RSVP_SHEET;
+const HEADERS    = RSVP_HEADERS;
 
 function doPost(e) {
     try {
-        const data  = JSON.parse(e.postData.contents);
-        const sheet = getOrCreateSheet();
+        const data = JSON.parse(e.postData.contents);
+
+        if (data.type === 'blessing') {
+            const sheet = getOrCreateNamedSheet(BLESSING_SHEET, ['Timestamp', 'Guest Name', 'Message']);
+            sheet.appendRow([new Date().toLocaleString(), data.guestName || '', data.message || '']);
+            return jsonResponse({ success: true, type: 'blessing' });
+        }
+
+        if (data.type === 'song') {
+            const sheet = getOrCreateNamedSheet(SONG_SHEET, SONG_HEADERS);
+            sheet.appendRow([
+                new Date().toLocaleString(),
+                data.guestName || '',
+                data.songTitle || '',
+                data.artist    || '',
+                data.note      || ''
+            ]);
+            return jsonResponse({ success: true, type: 'song' });
+        }
+
+        const sheet = getOrCreateNamedSheet(RSVP_SHEET, RSVP_HEADERS);
 
         sheet.appendRow([
             new Date().toLocaleString(),
@@ -40,16 +66,20 @@ function doGet() {
 }
 
 function getOrCreateSheet() {
+    return getOrCreateNamedSheet(RSVP_SHEET, RSVP_HEADERS);
+}
+
+function getOrCreateNamedSheet(name, headers) {
     const ss    = SpreadsheetApp.getActiveSpreadsheet();
-    let   sheet = ss.getSheetByName(SHEET_NAME);
+    let   sheet = ss.getSheetByName(name);
 
     if (!sheet) {
-        sheet = ss.insertSheet(SHEET_NAME);
-        const header = sheet.getRange(1, 1, 1, HEADERS.length);
-        header.setValues([HEADERS]);
+        sheet = ss.insertSheet(name);
+        const header = sheet.getRange(1, 1, 1, headers.length);
+        header.setValues([headers]);
         header.setFontWeight('bold');
-        header.setBackground('#1a1410');
-        header.setFontColor('#e8d5b0');
+        header.setBackground('#2d5a27');
+        header.setFontColor('#f5efe6');
         sheet.setFrozenRows(1);
         sheet.setColumnWidth(1, 160);
         sheet.setColumnWidth(2, 180);
