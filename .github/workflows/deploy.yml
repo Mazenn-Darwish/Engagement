@@ -29,21 +29,27 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Install wasm-tools workload
+        run: dotnet workload install wasm-tools
+
       - name: Publish
         run: dotnet publish -c Release -o publish
 
       - name: Verify publish output
         run: |
-          echo "=== publish/wwwroot/ top-level ==="
+          echo "=== wwwroot top-level ==="
           ls -la publish/wwwroot/
-          echo "=== _framework files ==="
-          ls publish/wwwroot/_framework/ | head -10
+          echo "=== css ==="
+          ls publish/wwwroot/css/ 2>/dev/null || echo "(missing)"
+          echo "=== js ==="
+          ls publish/wwwroot/js/  2>/dev/null || echo "(missing)"
+          echo "=== _framework (first 10) ==="
+          ls publish/wwwroot/_framework/ 2>/dev/null | head -10 || echo "(missing)"
 
       - name: Patch base href for GitHub Pages sub-path
-        # Replace <base href="/" /> with the repo name so assets resolve correctly
         run: |
           sed -i 's|<base href="/" />|<base href="/engagement/" />|g' publish/wwwroot/index.html
-          grep 'base href' publish/wwwroot/index.html
+          echo "base href after patch:"; grep 'base href' publish/wwwroot/index.html
 
       - name: Prevent Jekyll from ignoring _framework
         run: touch publish/wwwroot/.nojekyll
