@@ -48,8 +48,10 @@ jobs:
 
       - name: Patch base href for GitHub Pages sub-path
         run: |
-          sed -i 's|<base href="/" />|<base href="/engagement/" />|g' publish/wwwroot/index.html
-          echo "base href after patch:"; grep 'base href' publish/wwwroot/index.html
+          REPO="${{ github.event.repository.name }}"
+          sed -i "s|<base href=\"/\" />|<base href=\"/${REPO}/\" />|g" publish/wwwroot/index.html
+          echo "Patched base href to /${REPO}/"
+          grep 'base href' publish/wwwroot/index.html
 
       - name: Prevent Jekyll from ignoring _framework
         run: touch publish/wwwroot/.nojekyll
