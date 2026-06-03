@@ -7,7 +7,7 @@ public class SongService(HttpClient http)
 {
     // Paste your Google Apps Script Web App URL here to save to Google Sheets.
     // Leave as-is and submissions still succeed locally (no data persisted to a sheet).
-    private const string WebhookUrl = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
+    private const string WebhookUrl = "https://script.google.com/macros/s/1QhJfs-GgZuBUDpLUWRrsLkRhBAYDCIjJWwnWJkQENxEaqpWMuTDlNQDw/exec";
 
     private static bool IsConfigured =>
         !WebhookUrl.Contains("1QhJfs-GgZuBUDpLUWRrsLkRhBAYDCIjJWwnWJkQENxEaqpWMuTDlNQDw");
