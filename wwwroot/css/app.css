@@ -25,7 +25,11 @@
 html, body {
     width: 100%; height: 100%;
     overflow: hidden;
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(168,132,80,0.1) 100%),
+        url("data:image/svg+xml,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.048'/></svg>");
+    background-size: cover, 200px 200px;
     color: var(--text);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
@@ -81,11 +85,11 @@ html, body {
 /* ─── Bismillah ──────────────────────────────────────────── */
 .bismillah {
     font-family: var(--font-arabic);
-    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    font-size: clamp(1.6rem, 4.5vw, 2.6rem);
     color: var(--green-dk);
     font-weight: 500;
     letter-spacing: 0.02em;
-    line-height: 1.4;
+    line-height: 1.5;
     margin-bottom: 0.1rem;
 }
 
@@ -231,6 +235,49 @@ html, body {
     letter-spacing: 0.35em;
     color: var(--green-dk);
     font-weight: 400;
+}
+
+/* ─── Venue ──────────────────────────────────────────────── */
+.venue {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 0.55rem 1.5rem;
+    width: min(320px, 85vw);
+}
+
+.venue-time {
+    font-family: var(--font-display);
+    font-size: clamp(0.6rem, 1.3vw, 0.75rem);
+    letter-spacing: 0.3em;
+    color: var(--green-md);
+    font-weight: 400;
+}
+
+.venue-name {
+    font-family: var(--font-script);
+    font-size: clamp(1.3rem, 3.5vw, 2rem);
+    color: var(--green-dk);
+    line-height: 1.2;
+}
+
+.venue-address a {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: clamp(0.8rem, 1.8vw, 0.95rem);
+    color: var(--green-md);
+    font-weight: 300;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--border);
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.venue-address a:hover {
+    color: var(--green-dk);
+    border-bottom-color: var(--green-dk);
 }
 
 /* ─── RSVP button ────────────────────────────────────────── */
@@ -505,6 +552,54 @@ html, body {
     0%, 80%, 100% { opacity: 0.25; transform: scale(0.75); }
     40%           { opacity: 1;    transform: scale(1.1);  }
 }
+
+/* ─── SVG calligraphic ampersand ────────────────────────── */
+.amp-svg {
+    height: clamp(2.6rem, 6vw, 4.8rem);
+    width: auto;
+    display: block;
+    margin: 0 auto;
+    overflow: visible;
+}
+
+/* ─── Add to Calendar button ─────────────────────────────── */
+.calendar-btn {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: clamp(0.78rem, 1.6vw, 0.92rem);
+    color: var(--green-md);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.1rem 0;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+    transition: color 0.2s;
+    letter-spacing: 0.04em;
+}
+
+.calendar-btn:hover { color: var(--green-dk); }
+
+/* ─── Entrance animations ────────────────────────────────── */
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.corner                          { animation: fadeIn 1.4s ease-out both; animation-delay: 0.2s; }
+.hero-content > .bismillah       { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 0.2s; }
+.hero-content > .invite-love     { animation: fadeSlideUp 0.7s ease-out both; animation-delay: 0.4s; }
+.hero-content > .engagement-word { animation: fadeSlideUp 0.8s ease-out both; animation-delay: 0.6s; }
+.hero-content > .ornament        { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 0.8s; }
+.hero-content > .names           { animation: fadeSlideUp 0.9s ease-out both; animation-delay: 1.0s; }
+.hero-content > .divider         { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 1.25s; }
+.hero-content > .getting-engaged { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 1.4s; }
+.hero-content > .countdown       { animation: fadeSlideUp 0.7s ease-out both; animation-delay: 1.6s; }
+.hero-content > .date-line       { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 1.8s; }
+.hero-content > .venue           { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 1.95s; }
+.hero-content > .calendar-btn    { animation: fadeSlideUp 0.6s ease-out both; animation-delay: 2.1s; }
+.hero-content > .rsvp-btn        { animation: fadeSlideUp 0.7s ease-out both; animation-delay: 2.25s; }
 
 /* ─── Mobile tweaks ──────────────────────────────────────── */
 @media (max-height: 700px) {
