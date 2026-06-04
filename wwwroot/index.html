@@ -58,13 +58,34 @@
             if (sessionStorage.getItem('v')) return;
             sessionStorage.setItem('v', '1');
             const url = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
-            let ip = '';
+
+            let ip = '', city = '', country = '', region = '';
             try {
-                const r = await fetch('https://api.ipify.org?format=json');
+                const r = await fetch('https://ipapi.co/json/');
                 const j = await r.json();
-                ip = j.ip || '';
+                ip      = j.ip           || '';
+                city    = j.city         || '';
+                region  = j.region       || '';
+                country = j.country_name || '';
             } catch (_) {}
-            fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'visit', ip }) }).catch(() => {});
+
+            const ua         = navigator.userAgent;
+            const isTablet   = /iPad|Tablet/i.test(ua);
+            const isMobile   = /Mobi|Android|iPhone|iPad/i.test(ua);
+            const deviceType = isTablet ? 'Tablet' : isMobile ? 'Mobile' : 'Desktop';
+
+            let browser = 'Unknown';
+            if      (/Edg/i.test(ua))                        browser = 'Edge';
+            else if (/Chrome/i.test(ua))                     browser = 'Chrome';
+            else if (/Firefox/i.test(ua))                    browser = 'Firefox';
+            else if (/Safari/i.test(ua))                     browser = 'Safari';
+
+            const screenSize = window.screen.width + 'x' + window.screen.height;
+
+            fetch(url, {
+                method: 'POST', mode: 'no-cors',
+                body: JSON.stringify({ type: 'visit', ip, city, region, country, deviceType, browser, screenSize })
+            }).catch(() => {});
         }
 
         // ── Signature canvas ──────────────────────────────────

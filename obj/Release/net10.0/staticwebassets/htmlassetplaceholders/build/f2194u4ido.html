@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mazen &amp; Doha · Engagement</title>
     <base href="/" />
-    <link href="_framework/dotnet.j9y9ghrvan.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-t3kMJ2UA6OI1X43aQV+6fjAGB/biiT/kWYU5DGr6XgU=" />
+    <link href="_framework/dotnet.2eoafihx90.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-Bh8pwIAxRdqfvpRM0tQptif/B4AmHAbue+7UmktfDo8=" />
 
     <!-- Open Graph / WhatsApp / social sharing -->
     <meta property="og:type"        content="website" />
@@ -18,39 +18,38 @@
     <meta name="twitter:description" content="Join us to celebrate the engagement of Mazen &amp; Doha on September 11, 2026." />
     <meta name="twitter:image"       content="og-image.png" />
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Cinzel + Cormorant Garamond + Great Vibes (script names) + Noto Naskh Arabic (Bismillah) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Great+Vibes&family=Noto+Naskh+Arabic:wght@400;500&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" href="css/app.css" />
 
     <script type="importmap">{
   "imports": {
     "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
-    "./_framework/dotnet.js": "./_framework/dotnet.j9y9ghrvan.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.2eoafihx90.js",
     "./_framework/dotnet.native.js": "./_framework/dotnet.native.rjbmzc4jpg.js",
     "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js",
-    "./js/petals.js": "./js/petals.6072srcqt9.js"
+    "./js/petals.js": "./js/petals.6wg45ofytb.js"
   },
   "scopes": {},
   "integrity": {
     "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
     "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
-    "./_framework/dotnet.j9y9ghrvan.js": "sha256-t3kMJ2UA6OI1X43aQV+6fjAGB/biiT/kWYU5DGr6XgU=",
-    "./_framework/dotnet.js": "sha256-t3kMJ2UA6OI1X43aQV+6fjAGB/biiT/kWYU5DGr6XgU=",
+    "./_framework/dotnet.2eoafihx90.js": "sha256-Bh8pwIAxRdqfvpRM0tQptif/B4AmHAbue+7UmktfDo8=",
+    "./_framework/dotnet.js": "sha256-Bh8pwIAxRdqfvpRM0tQptif/B4AmHAbue+7UmktfDo8=",
     "./_framework/dotnet.native.js": "sha256-95bE510j3EADMNW2OKa/DMBhu8N632dl5HGeBfXNEf4=",
     "./_framework/dotnet.native.rjbmzc4jpg.js": "sha256-95bE510j3EADMNW2OKa/DMBhu8N632dl5HGeBfXNEf4=",
     "./_framework/dotnet.runtime.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU=",
     "./_framework/dotnet.runtime.r2kbxkuujc.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU=",
-    "./js/petals.6072srcqt9.js": "sha256-9rf2PmrgU4QLD3MLo3wySWa2B10pdFxsPqX4Hp2qB/k=",
-    "./js/petals.js": "sha256-9rf2PmrgU4QLD3MLo3wySWa2B10pdFxsPqX4Hp2qB/k="
+    "./js/petals.6wg45ofytb.js": "sha256-hiNC/807vHE9u19blhmRf6FKtuanajpkMDlkFjJLrLM=",
+    "./js/petals.js": "sha256-hiNC/807vHE9u19blhmRf6FKtuanajpkMDlkFjJLrLM="
   }
 }</script>
 </head>
 <body>
 
-    <!-- Loading screen — removed by hideLoader() after first Blazor render -->
     <div id="blazor-loading" aria-label="Loading" aria-live="polite">
         <p class="loading-title">Mazen &amp; Doha</p>
         <div class="loading-dots">
@@ -73,6 +72,119 @@
             el.style.transition = 'opacity 0.9s ease';
             el.style.opacity = '0';
             setTimeout(() => el.remove(), 950);
+        }
+
+        // ── Analytics: count one visit per browser session ───
+        async function countVisit() {
+            if (sessionStorage.getItem('v')) return;
+            sessionStorage.setItem('v', '1');
+            const url = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
+            let ip = '';
+            try {
+                const r = await fetch('https://api.ipify.org?format=json');
+                const j = await r.json();
+                ip = j.ip || '';
+            } catch (_) {}
+            fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'visit', ip }) }).catch(() => {});
+        }
+
+        // ── Signature canvas ──────────────────────────────────
+        function initSignatureCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const wrap = canvas.closest('.sig-canvas-wrap');
+            const ctx  = canvas.getContext('2d');
+            let drawing = false;
+            let lastPos = null;
+
+            ctx.strokeStyle = '#2d5a27';
+            ctx.lineWidth   = 2.5;
+            ctx.lineCap     = 'round';
+            ctx.lineJoin    = 'round';
+
+            function getPos(e) {
+                const r = canvas.getBoundingClientRect();
+                const sx = canvas.width  / r.width;
+                const sy = canvas.height / r.height;
+                const src = e.touches ? e.touches[0] : e;
+                return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+            }
+
+            function onStart(e) {
+                e.preventDefault();
+                drawing = true;
+                lastPos = getPos(e);
+                if (wrap) wrap.classList.add('has-content');
+            }
+
+            function onMove(e) {
+                if (!drawing) return;
+                e.preventDefault();
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(lastPos.x, lastPos.y);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                lastPos = pos;
+            }
+
+            function onEnd() { drawing = false; lastPos = null; }
+
+            canvas.addEventListener('mousedown',  onStart);
+            canvas.addEventListener('mousemove',  onMove);
+            canvas.addEventListener('mouseup',    onEnd);
+            canvas.addEventListener('mouseleave', onEnd);
+            canvas.addEventListener('touchstart', onStart, { passive: false });
+            canvas.addEventListener('touchmove',  onMove,  { passive: false });
+            canvas.addEventListener('touchend',   onEnd);
+        }
+
+        function clearSignatureCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            const wrap = canvas.closest('.sig-canvas-wrap');
+            if (wrap) wrap.classList.remove('has-content');
+        }
+
+        function isSignatureEmpty(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return true;
+            const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+            for (let i = 3; i < data.length; i += 4) {
+                if (data[i] > 0) return false;
+            }
+            return true;
+        }
+
+        function getSignatureDataUrl(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            return canvas ? canvas.toDataURL('image/png') : '';
+        }
+
+        async function postToSheet(url, payload) {
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(payload)
+                });
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function downloadIcs(content, filename) {
+            const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
     </script>
 

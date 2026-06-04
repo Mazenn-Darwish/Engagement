@@ -25,7 +25,7 @@ const ANALYTICS_SHEET = 'Analytics';
 const SONG_HEADERS      = ['Timestamp', 'Guest Name', 'Song Title', 'Artist', 'Why This Song'];
 const BLESSING_HEADERS  = ['Timestamp', 'Guest Name', 'Message'];
 const GUESTBOOK_HEADERS = ['Timestamp', 'Guest Name', 'Signature (base64 PNG)'];
-const ANALYTICS_HEADERS = ['Timestamp', 'IP Address'];
+const ANALYTICS_HEADERS = ['Timestamp', 'IP Address', 'City', 'Region', 'Country', 'Device', 'Browser', 'Screen'];
 
 function doPost(e) {
     try {
@@ -57,7 +57,16 @@ function doPost(e) {
 
         if (data.type === 'visit') {
             const sheet = getOrCreateNamedSheet(ANALYTICS_SHEET, ANALYTICS_HEADERS);
-            sheet.appendRow([new Date().toLocaleString(), data.ip || '']);
+            sheet.appendRow([
+                new Date().toLocaleString(),
+                data.ip         || '',
+                data.city       || '',
+                data.region     || '',
+                data.country    || '',
+                data.deviceType || '',
+                data.browser    || '',
+                data.screenSize || ''
+            ]);
             return jsonResponse({ success: true, type: 'visit' });
         }
 
