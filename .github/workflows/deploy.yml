@@ -53,6 +53,12 @@ jobs:
           echo "Patched base href to /${REPO}/"
           grep 'base href' publish/wwwroot/index.html
 
+      - name: Create dashboard route
+        run: |
+          mkdir -p publish/wwwroot/dashboard
+          cp publish/wwwroot/index.html publish/wwwroot/dashboard/index.html
+          echo "Created dashboard/index.html"
+
       - name: Prevent Jekyll from ignoring _framework
         run: touch publish/wwwroot/.nojekyll
 
