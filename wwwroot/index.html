@@ -53,6 +53,19 @@
             setTimeout(() => el.remove(), 950);
         }
 
+        async function postToSheet(url, payload) {
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(payload)
+                });
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
         function downloadIcs(content, filename) {
             const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
             const url  = URL.createObjectURL(blob);
