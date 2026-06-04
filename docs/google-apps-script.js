@@ -18,7 +18,7 @@
  */
 
 // ── Admin key — CHANGE THIS before deploying, then use it to log in to /dashboard ──
-const ADMIN_KEY = '1uR-PA1lp3ZfrILnYUymQJnmNw-tcYvjlU8HBw2s-sJRgr76F7uozOGJb';
+const ADMIN_KEY = 'mazendohamamdouh@2A';
 
 const SONG_SHEET      = 'Songs';
 const BLESSING_SHEET  = 'Blessings';
