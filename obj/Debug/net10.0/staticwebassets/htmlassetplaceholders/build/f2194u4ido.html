@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mazen &amp; Doha · Engagement</title>
     <base href="/" />
-    <link href="_framework/dotnet.4vub2jgi0x.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-AF/LtRPI4i0Wy1L62NNRYVeySIPMVKsT9Rsm+cKuvec=" />
+    <link href="_framework/dotnet.b567a53j8c.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-IXfxW5I4TCjBBH3jQqFwgwfaJutmJekXIWkBueEp1gg=" />
 
     <!-- Open Graph / WhatsApp / social sharing -->
     <meta property="og:type"        content="website" />
@@ -29,7 +29,7 @@
   "imports": {
     "./_content/Microsoft.DotNet.HotReload.WebAssembly.Browser/Microsoft.DotNet.HotReload.WebAssembly.Browser.lib.module.js": "./_content/Microsoft.DotNet.HotReload.WebAssembly.Browser/Microsoft.DotNet.HotReload.WebAssembly.Browser.99zm1jdh75.lib.module.js",
     "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
-    "./_framework/dotnet.js": "./_framework/dotnet.4vub2jgi0x.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.b567a53j8c.js",
     "./_framework/dotnet.native.js": "./_framework/dotnet.native.rjbmzc4jpg.js",
     "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js",
     "./js/petals.js": "./js/petals.6wg45ofytb.js"
@@ -40,8 +40,8 @@
     "./_content/Microsoft.DotNet.HotReload.WebAssembly.Browser/Microsoft.DotNet.HotReload.WebAssembly.Browser.lib.module.js": "sha256-A8e6zZwhOqf7lDQqbbCYcAUv4wGE9aQxOo4WyYxR//0=",
     "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
     "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
-    "./_framework/dotnet.4vub2jgi0x.js": "sha256-AF/LtRPI4i0Wy1L62NNRYVeySIPMVKsT9Rsm+cKuvec=",
-    "./_framework/dotnet.js": "sha256-AF/LtRPI4i0Wy1L62NNRYVeySIPMVKsT9Rsm+cKuvec=",
+    "./_framework/dotnet.b567a53j8c.js": "sha256-IXfxW5I4TCjBBH3jQqFwgwfaJutmJekXIWkBueEp1gg=",
+    "./_framework/dotnet.js": "sha256-IXfxW5I4TCjBBH3jQqFwgwfaJutmJekXIWkBueEp1gg=",
     "./_framework/dotnet.native.js": "sha256-95bE510j3EADMNW2OKa/DMBhu8N632dl5HGeBfXNEf4=",
     "./_framework/dotnet.native.rjbmzc4jpg.js": "sha256-95bE510j3EADMNW2OKa/DMBhu8N632dl5HGeBfXNEf4=",
     "./_framework/dotnet.runtime.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU=",
@@ -75,6 +75,88 @@
             el.style.transition = 'opacity 0.9s ease';
             el.style.opacity = '0';
             setTimeout(() => el.remove(), 950);
+        }
+
+        // ── Analytics: count one visit per browser session ───
+        function countVisit() {
+            if (sessionStorage.getItem('v')) return;
+            sessionStorage.setItem('v', '1');
+            const url = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
+            fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'visit' }) }).catch(() => {});
+        }
+
+        // ── Signature canvas ──────────────────────────────────
+        function initSignatureCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const wrap = canvas.closest('.sig-canvas-wrap');
+            const ctx  = canvas.getContext('2d');
+            let drawing = false;
+            let lastPos = null;
+
+            ctx.strokeStyle = '#2d5a27';
+            ctx.lineWidth   = 2.5;
+            ctx.lineCap     = 'round';
+            ctx.lineJoin    = 'round';
+
+            function getPos(e) {
+                const r = canvas.getBoundingClientRect();
+                const sx = canvas.width  / r.width;
+                const sy = canvas.height / r.height;
+                const src = e.touches ? e.touches[0] : e;
+                return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+            }
+
+            function onStart(e) {
+                e.preventDefault();
+                drawing = true;
+                lastPos = getPos(e);
+                if (wrap) wrap.classList.add('has-content');
+            }
+
+            function onMove(e) {
+                if (!drawing) return;
+                e.preventDefault();
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(lastPos.x, lastPos.y);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                lastPos = pos;
+            }
+
+            function onEnd() { drawing = false; lastPos = null; }
+
+            canvas.addEventListener('mousedown',  onStart);
+            canvas.addEventListener('mousemove',  onMove);
+            canvas.addEventListener('mouseup',    onEnd);
+            canvas.addEventListener('mouseleave', onEnd);
+            canvas.addEventListener('touchstart', onStart, { passive: false });
+            canvas.addEventListener('touchmove',  onMove,  { passive: false });
+            canvas.addEventListener('touchend',   onEnd);
+        }
+
+        function clearSignatureCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            const wrap = canvas.closest('.sig-canvas-wrap');
+            if (wrap) wrap.classList.remove('has-content');
+        }
+
+        function isSignatureEmpty(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return true;
+            const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+            for (let i = 3; i < data.length; i += 4) {
+                if (data[i] > 0) return false;
+            }
+            return true;
+        }
+
+        function getSignatureDataUrl(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            return canvas ? canvas.toDataURL('image/png') : '';
         }
 
         async function postToSheet(url, payload) {

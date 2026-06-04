@@ -680,6 +680,7 @@ html, body {
     transition: border-color 0.2s;
     border-radius: 0;
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .form-field input:focus,
@@ -896,6 +897,68 @@ html, body {
     .corner { width: 130px; height: 130px; }
     .sep    { display: none; }
     .countdown { gap: 0.35rem; }
+}
+
+/* ─── Signature canvas ───────────────────────────────────── */
+.sig-canvas-wrap {
+    position: relative;
+    border: 1px solid var(--border);
+    background: rgba(245, 239, 230, 0.6);
+    cursor: crosshair;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.sig-canvas {
+    display: block;
+    width: 100%;
+    height: 150px;
+    touch-action: none;
+}
+
+.sig-hint {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    color: rgba(74, 124, 66, 0.22);
+    letter-spacing: 0.12em;
+    pointer-events: none;
+    transition: opacity 0.25s;
+}
+
+.sig-canvas-wrap.has-content .sig-hint { opacity: 0; }
+
+.sig-clear-btn {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: 0.78rem;
+    color: var(--green-md);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: 0.06em;
+    transition: color 0.2s;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+    margin-bottom: 0.4rem;
+    display: block;
+}
+
+.sig-clear-btn:hover { color: var(--red-err); }
+
+.sig-result {
+    display: block;
+    width: min(340px, 88%);
+    height: auto;
+    margin: 0.8rem auto 1.2rem;
+    border: 1px solid var(--border);
+    background: rgba(245, 239, 230, 0.5);
 }
 
 /* ─── Envelope intro ─────────────────────────────────────── */

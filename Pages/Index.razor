@@ -3,6 +3,7 @@
 @inject SongService SongService
 @inject MusicSearchService MusicSearch
 @inject CommentService CommentService
+@inject SignatureService SignatureService
 @implements IDisposable
 
 <canvas id="petalCanvas"></canvas>
@@ -214,6 +215,7 @@
         <div class="action-row">
             <button class="rsvp-btn" @onclick="OpenSongModal">♪ &nbsp; Suggest a Song</button>
             <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenCommentModal">✦ &nbsp; Leave us a comment!</button>
+            <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenSigModal">✒ &nbsp; Sign the Guestbook</button>
         </div>
 
     </div>
@@ -368,6 +370,58 @@
         </div>
     </div>
 }
+@if (_sigOpen)
+{
+    <div class="modal-overlay" @onclick="CloseSigModal">
+        <div class="modal-box" @onclick:stopPropagation="true">
+
+            @if (_sigSubmitted)
+            {
+                <div class="thank-you">
+                    <p class="ty-ornament">✒</p>
+                    <img src="@_sigDataUrl" class="sig-result" alt="Your signature" />
+                    <p class="song-added-sub">@_sig.GuestName has signed the guestbook ✦</p>
+                    <p class="song-added-thanks">Thank you!</p>
+                    <button class="rsvp-btn" @onclick="CloseSigModal" style="margin-top:1.8rem">Close</button>
+                </div>
+            }
+            else
+            {
+                <h2 class="modal-title">✒ &nbsp; Sign our Guestbook</h2>
+                <p class="modal-subtitle">Draw your signature or leave a little doodle</p>
+
+                <EditForm Model="_sig" OnValidSubmit="HandleSignatureSubmit">
+                    <DataAnnotationsValidator />
+
+                    <div class="form-field">
+                        <label>Your Name</label>
+                        <InputText @bind-Value="_sig.GuestName" placeholder="Your full name" />
+                        <ValidationMessage For="@(() => _sig.GuestName)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Your Signature</label>
+                        <div class="sig-canvas-wrap">
+                            <canvas id="sigCanvas" width="600" height="180" class="sig-canvas"></canvas>
+                            <span class="sig-hint">Sign here ✦</span>
+                        </div>
+                        <button type="button" class="sig-clear-btn" @onclick="ClearSignature">Clear</button>
+                    </div>
+
+                    @if (_sigError != null)
+                    {
+                        <p class="submit-error">@_sigError</p>
+                    }
+
+                    <button type="submit" class="rsvp-btn submit-btn" disabled="@_sigSubmitting">
+                        @(_sigSubmitting ? "Signing…" : "Sign the Guestbook")
+                    </button>
+                </EditForm>
+            }
+
+        </div>
+    </div>
+}
 } @* end @if (!_envelopeVisible) *@
 
 
@@ -404,6 +458,57 @@
     private CancellationTokenSource _searchCts = new();
     private bool _isSearching;
 
+    // ── Signature / guestbook modal ──────────────────────
+    private bool _sigOpen;
+    private bool _sigSubmitted;
+    private bool _sigSubmitting;
+    private bool _sigCanvasReady;
+    private string? _sigError;
+    private string _sigDataUrl = "";
+    private SignatureModel _sig = new();
+
+    private void OpenSigModal()
+    {
+        _sig            = new SignatureModel();
+        _sigSubmitted   = false;
+        _sigError       = null;
+        _sigCanvasReady = false;
+        _sigOpen        = true;
+    }
+
+    private void CloseSigModal() => _sigOpen = false;
+
+    private async Task ClearSignature()
+    {
+        _sigError = null;
+        try { await JS.InvokeVoidAsync("clearSignatureCanvas", "sigCanvas"); } catch { }
+    }
+
+    private async Task HandleSignatureSubmit()
+    {
+        bool empty = true;
+        try { empty = await JS.InvokeAsync<bool>("isSignatureEmpty", "sigCanvas"); } catch { }
+
+        if (empty)
+        {
+            _sigError = "Please draw your signature before submitting.";
+            return;
+        }
+
+        _sigSubmitting = true;
+        _sigError      = null;
+
+        try { _sigDataUrl = await JS.InvokeAsync<string>("getSignatureDataUrl", "sigCanvas"); }
+        catch { _sigDataUrl = ""; }
+
+        _sig.SignatureData = _sigDataUrl;
+        var success = await SignatureService.SubmitAsync(_sig);
+        _sigSubmitting = false;
+
+        if (success) _sigSubmitted = true;
+        else         _sigError     = "Something went wrong. Please try again.";
+    }
+
     // ── Comment modal ─────────────────────────────────────
     private bool _commentOpen;
     private bool _commentSubmitted;
@@ -430,9 +535,18 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
-        try { await JS.InvokeVoidAsync("initPetals"); } catch { /* canvas unavailable */ }
-        try { await JS.InvokeVoidAsync("hideLoader");  } catch { /* already removed */  }
+        if (firstRender)
+        {
+            try { await JS.InvokeVoidAsync("initPetals");  } catch { }
+            try { await JS.InvokeVoidAsync("hideLoader");  } catch { }
+            try { await JS.InvokeVoidAsync("countVisit");  } catch { }
+            return;
+        }
+        if (_sigOpen && !_sigCanvasReady)
+        {
+            _sigCanvasReady = true;
+            try { await JS.InvokeVoidAsync("initSignatureCanvas", "sigCanvas"); } catch { }
+        }
     }
 
     private void UpdateCountdown()

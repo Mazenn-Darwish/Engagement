@@ -11,5 +11,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<SongService>();
 builder.Services.AddScoped<MusicSearchService>();
 builder.Services.AddScoped<CommentService>();
+builder.Services.AddScoped<SignatureService>();
 
 await builder.Build().RunAsync();

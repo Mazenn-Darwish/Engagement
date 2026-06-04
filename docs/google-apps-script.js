@@ -1,5 +1,5 @@
 /**
- * Google Apps Script — RSVP webhook
+ * Google Apps Script — engagement website webhook
  *
  * Setup:
  *  1. Go to https://script.google.com and create a new project.
@@ -7,29 +7,29 @@
  *  3. Click Deploy → New deployment → Web app.
  *     - Execute as: Me
  *     - Who has access: Anyone
- *  4. Copy the deployment URL and paste it into Services/RsvpService.cs (WebhookUrl).
- *  5. Re-deploy after any code change (use "Manage deployments" → edit the existing one).
+ *  4. Copy the deployment URL and paste it into each Service file (WebhookUrl).
+ *  5. Re-deploy after any code change (Manage deployments → edit existing one).
+ *
+ * Sheets created automatically:
+ *   Songs      — song suggestions
+ *   Blessings  — comments / messages
+ *   Guestbook  — drawn signatures (base64 PNG)
+ *   Analytics  — one row per page visit (timestamp only)
  */
 
-const RSVP_SHEET     = 'RSVPs';
-const SONG_SHEET     = 'Songs';
-const BLESSING_SHEET = 'Blessings';
-const RSVP_HEADERS = ['Timestamp', 'Full Name', 'Email', 'Attending', 'Guests', 'Note'];
-const SONG_HEADERS = ['Timestamp', 'Guest Name', 'Song Title', 'Artist', 'Why This Song'];
+const SONG_SHEET      = 'Songs';
+const BLESSING_SHEET  = 'Blessings';
+const GUESTBOOK_SHEET = 'Guestbook';
+const ANALYTICS_SHEET = 'Analytics';
 
-// Keep old name as alias so any existing code still works
-const SHEET_NAME = RSVP_SHEET;
-const HEADERS    = RSVP_HEADERS;
+const SONG_HEADERS      = ['Timestamp', 'Guest Name', 'Song Title', 'Artist', 'Why This Song'];
+const BLESSING_HEADERS  = ['Timestamp', 'Guest Name', 'Message'];
+const GUESTBOOK_HEADERS = ['Timestamp', 'Guest Name', 'Signature (base64 PNG)'];
+const ANALYTICS_HEADERS = ['Timestamp'];
 
 function doPost(e) {
     try {
         const data = JSON.parse(e.postData.contents);
-
-        if (data.type === 'blessing') {
-            const sheet = getOrCreateNamedSheet(BLESSING_SHEET, ['Timestamp', 'Guest Name', 'Message']);
-            sheet.appendRow([new Date().toLocaleString(), data.guestName || '', data.message || '']);
-            return jsonResponse({ success: true, type: 'blessing' });
-        }
 
         if (data.type === 'song') {
             const sheet = getOrCreateNamedSheet(SONG_SHEET, SONG_HEADERS);
@@ -43,30 +43,34 @@ function doPost(e) {
             return jsonResponse({ success: true, type: 'song' });
         }
 
-        const sheet = getOrCreateNamedSheet(RSVP_SHEET, RSVP_HEADERS);
+        if (data.type === 'blessing') {
+            const sheet = getOrCreateNamedSheet(BLESSING_SHEET, BLESSING_HEADERS);
+            sheet.appendRow([new Date().toLocaleString(), data.guestName || '', data.message || '']);
+            return jsonResponse({ success: true, type: 'blessing' });
+        }
 
-        sheet.appendRow([
-            new Date().toLocaleString(),
-            data.fullName  || '',
-            data.email     || '',
-            data.attending === 'yes' ? 'Yes' : 'No',
-            data.attending === 'yes' ? (Number(data.guestCount) || 1) : 0,
-            data.note      || ''
-        ]);
+        if (data.type === 'signature') {
+            const sheet = getOrCreateNamedSheet(GUESTBOOK_SHEET, GUESTBOOK_HEADERS);
+            sheet.appendRow([new Date().toLocaleString(), data.guestName || '', data.signature || '']);
+            return jsonResponse({ success: true, type: 'signature' });
+        }
 
-        return jsonResponse({ success: true });
+        if (data.type === 'visit') {
+            const sheet = getOrCreateNamedSheet(ANALYTICS_SHEET, ANALYTICS_HEADERS);
+            sheet.appendRow([new Date().toLocaleString()]);
+            return jsonResponse({ success: true, type: 'visit' });
+        }
+
+        return jsonResponse({ success: false, error: 'Unknown type: ' + (data.type || 'none') });
+
     } catch (err) {
         return jsonResponse({ success: false, error: err.message });
     }
 }
 
-// Handles browser CORS OPTIONS preflight and can be used to health-check the URL
+// Handles CORS OPTIONS preflight and can be used to health-check the URL
 function doGet() {
-    return jsonResponse({ status: 'ok', message: 'RSVP webhook is live.' });
-}
-
-function getOrCreateSheet() {
-    return getOrCreateNamedSheet(RSVP_SHEET, RSVP_HEADERS);
+    return jsonResponse({ status: 'ok', message: 'Webhook is live.' });
 }
 
 function getOrCreateNamedSheet(name, headers) {
