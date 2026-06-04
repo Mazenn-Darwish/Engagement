@@ -289,20 +289,41 @@ html, body {
     line-height: 1.2;
 }
 
-.venue-address a {
+.venue-address {
     font-family: var(--font-body);
     font-style: italic;
     font-size: clamp(0.8rem, 1.8vw, 0.95rem);
     color: var(--green-md);
     font-weight: 300;
-    text-decoration: none;
-    border-bottom: 1px dotted var(--border);
-    transition: color 0.2s, border-color 0.2s;
 }
 
-.venue-address a:hover {
+.maps-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.7rem;
+    padding: 0.55rem 1.2rem;
+    font-family: var(--font-display);
+    font-size: clamp(0.65rem, 1.5vw, 0.78rem);
+    letter-spacing: 0.18em;
+    font-weight: 600;
     color: var(--green-dk);
-    border-bottom-color: var(--green-dk);
+    background: transparent;
+    border: 1.5px solid var(--green-dk);
+    border-radius: 2rem;
+    text-decoration: none;
+    transition: background 0.22s, color 0.22s;
+}
+
+.maps-btn:hover, .maps-btn:focus-visible {
+    background: var(--green-dk);
+    color: var(--bg);
+}
+
+.maps-pin {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
 }
 
 /* ─── RSVP button ────────────────────────────────────────── */
