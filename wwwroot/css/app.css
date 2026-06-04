@@ -898,69 +898,6 @@ html, body {
     .countdown { gap: 0.35rem; }
 }
 
-/* ─── Language toggle ────────────────────────────────────── */
-.lang-toggle {
-    position: fixed;
-    top: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 600;
-    font-family: var(--font-display);
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    color: var(--green-md);
-    background: rgba(245, 239, 230, 0.88);
-    border: 1px solid var(--border);
-    padding: 0.35rem 1rem;
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    white-space: nowrap;
-}
-
-.lang-toggle:hover {
-    color: var(--green-dk);
-    border-color: var(--green-dk);
-    background: rgba(245, 239, 230, 0.97);
-}
-
-/* ─── Arabic hero overrides ──────────────────────────────── */
-.hero--ar .invite-love,
-.hero--ar .getting-engaged,
-.hero--ar .unit-label,
-.hero--ar .venue-time,
-.hero--ar .calendar-btn,
-.hero--ar .rsvp-btn,
-.hero--ar .date-line {
-    font-family: var(--font-arabic);
-    letter-spacing: 0.02em;
-}
-
-.hero--ar .engagement-word {
-    font-family: var(--font-arabic);
-    letter-spacing: 0.04em;
-    font-size: clamp(1.6rem, 5.5vw, 3rem);
-}
-
-/* Arabic modal overrides */
-.modal-box--ar .modal-title,
-.modal-box--ar .modal-subtitle,
-.modal-box--ar label,
-.modal-box--ar .rsvp-btn,
-.modal-box--ar .submit-error,
-.modal-box--ar .song-added-sub,
-.modal-box--ar .song-added-thanks,
-.modal-box--ar .thank-you p,
-.modal-box--ar .thank-you h2 {
-    font-family: var(--font-arabic);
-    letter-spacing: 0.02em;
-}
-
-.modal-box--ar .modal-title {
-    font-size: clamp(1rem, 2.4vw, 1.35rem);
-}
-
 /* ─── Envelope intro ─────────────────────────────────────── */
 .env-overlay {
     position: fixed;

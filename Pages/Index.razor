@@ -113,11 +113,6 @@
     </svg>
 </div>
 
-<!-- Language toggle — always visible, above everything -->
-<button class="lang-toggle" @onclick="ToggleLanguage" title="Switch language">
-    @(_isAr ? "English" : "عربي")
-</button>
-
 <!-- Envelope intro screen -->
 @if (_envelopeVisible)
 {
@@ -147,22 +142,20 @@
                     <span class="env-seal-text">M ✦ D</span>
                 </div>
             </div>
-            <p class="env-hint" lang="@(_isAr ? "ar" : "en")" dir="@(_isAr ? "rtl" : "ltr")">
-                @(_isAr ? "انقر للفتح" : "Click to open")
-            </p>
+            <p class="env-hint">Click to open</p>
         </div>
     </div>
 }
 
 @if (!_envelopeVisible)
 {
-<main class="hero @(_isAr ? "hero--ar" : "")" dir="@(_isAr ? "rtl" : "ltr")">
+<main class="hero">
     <div class="hero-content">
 
         <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
 
-        <p class="invite-love">@T("We Would love to have you at our", "يسعدنا حضوركم في")</p>
-        <h1 class="engagement-word">@T("ENGAGEMENT!", "حفل الخطوبة!")</h1>
+        <p class="invite-love">We Would love to have you at our</p>
+        <h1 class="engagement-word">ENGAGEMENT!</h1>
 
         <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
 
@@ -180,47 +173,47 @@
             <span class="divider-line"></span>
         </div>
 
-        <p class="getting-engaged">@T("are getting engaged", "على موعد مع الخطوبة")</p>
+        <p class="getting-engaged">are getting engaged</p>
 
-        <div class="countdown" dir="ltr">
+        <div class="countdown">
             <div class="countdown-unit">
                 <span class="count">@_days</span>
-                <span class="unit-label">@T("Days", "أيام")</span>
+                <span class="unit-label">Days</span>
             </div>
             <span class="sep">·</span>
             <div class="countdown-unit">
                 <span class="count">@_hours.ToString("D2")</span>
-                <span class="unit-label">@T("Hours", "ساعات")</span>
+                <span class="unit-label">Hours</span>
             </div>
             <span class="sep">·</span>
             <div class="countdown-unit">
                 <span class="count">@_minutes.ToString("D2")</span>
-                <span class="unit-label">@T("Minutes", "دقائق")</span>
+                <span class="unit-label">Minutes</span>
             </div>
             <span class="sep">·</span>
             <div class="countdown-unit">
                 <span class="count">@_seconds.ToString("D2")</span>
-                <span class="unit-label">@T("Seconds", "ثواني")</span>
+                <span class="unit-label">Seconds</span>
             </div>
         </div>
 
-        <p class="date-line" dir="ltr">11 &nbsp;·&nbsp; @T("September", "سبتمبر") &nbsp;·&nbsp; 2026</p>
+        <p class="date-line">11 &nbsp;·&nbsp; September &nbsp;·&nbsp; 2026</p>
 
         <div class="venue">
-            <p class="venue-time">@T("AT 7:00 PM", "الساعة ٧:٠٠ مساءً")</p>
+            <p class="venue-time">AT 7:00 PM</p>
             <p class="venue-name">Villa Le Mariage</p>
-            <p class="venue-address" dir="ltr">
+            <p class="venue-address">
                 <a href="https://maps.google.com/?q=Villa+Le+Mariage+Cortoba+Street+King+Mariout" target="_blank" rel="noopener">
                     Cortoba Street, King Mariout
                 </a>
             </p>
         </div>
 
-        <button class="calendar-btn" @onclick="DownloadCalendar">@T("+ Add to Calendar", "+ أضف للتقويم")</button>
+        <button class="calendar-btn" @onclick="DownloadCalendar">+ Add to Calendar</button>
 
         <div class="action-row">
-            <button class="rsvp-btn" @onclick="OpenSongModal">♪ &nbsp; @T("Suggest a Song", "اقترح أغنية")</button>
-            <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenCommentModal">✦ &nbsp; @T("Leave us a comment!", "اتركوا تعليقاً!")</button>
+            <button class="rsvp-btn" @onclick="OpenSongModal">♪ &nbsp; Suggest a Song</button>
+            <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenCommentModal">✦ &nbsp; Leave us a comment!</button>
         </div>
 
     </div>
@@ -229,7 +222,7 @@
 @if (_songOpen)
 {
     <div class="modal-overlay" @onclick="CloseSongModal">
-        <div class="modal-box @(_isAr ? "modal-box--ar" : "")" @onclick:stopPropagation="true" dir="@(_isAr ? "rtl" : "ltr")">
+        <div class="modal-box" @onclick:stopPropagation="true">
 
             @if (_songSubmitted)
             {
@@ -237,25 +230,25 @@
                     <p class="ty-ornament">♪</p>
                     <p class="song-added-label">"@_song.SongTitle"</p>
                     <p class="song-added-by">by @_song.Artist</p>
-                    <p class="song-added-sub">@T("has been added to the playlist ✦", "تمت الإضافة للقائمة ✦")</p>
-                    <p class="song-added-thanks">@T("Thank you", "شكراً")، @_song.GuestName!</p>
-                    <button class="rsvp-btn" @onclick="CloseSongModal" style="margin-top:1.8rem">@T("Close", "إغلاق")</button>
+                    <p class="song-added-sub">has been added to the playlist ✦</p>
+                    <p class="song-added-thanks">Thank you, @_song.GuestName!</p>
+                    <button class="rsvp-btn" @onclick="CloseSongModal" style="margin-top:1.8rem">Close</button>
                 </div>
             }
             else
             {
-                <h2 class="modal-title">♪ &nbsp; @T("Suggest a Song", "اقترح أغنية")</h2>
-                <p class="modal-subtitle">@T("Search for a song to add to our playlist", "ابحث عن أغنية لقائمتنا")</p>
+                <h2 class="modal-title">♪ &nbsp; Suggest a Song</h2>
+                <p class="modal-subtitle">Search for a song to add to our playlist</p>
 
+                <!-- Search input lives outside EditForm so Enter key doesn't submit -->
                 <div class="form-field">
-                    <label>@T("Search for a Song", "ابحث عن أغنية")</label>
+                    <label>Search for a Song</label>
                     <div class="search-input-wrap">
                         <input class="search-input" type="text"
                                value="@_searchQuery"
                                @oninput="OnSearchInput"
-                               placeholder="@T("Song name or artist…", "اسم الأغنية أو الفنان...")"
-                               autocomplete="off"
-                               dir="ltr" />
+                               placeholder="Song name or artist…"
+                               autocomplete="off" />
                         @if (_isSearching) { <span class="search-spinner">⟳</span> }
                     </div>
                 </div>
@@ -283,8 +276,8 @@
                     <DataAnnotationsValidator />
 
                     <div class="form-field">
-                        <label>@T("Your Name", "اسمك")</label>
-                        <InputText @bind-Value="_song.GuestName" placeholder="@T("Your full name", "اسمك الكامل")" />
+                        <label>Your Name</label>
+                        <InputText @bind-Value="_song.GuestName" placeholder="Your full name" />
                         <ValidationMessage For="@(() => _song.GuestName)" />
                     </div>
 
@@ -299,7 +292,7 @@
                                 <span class="preview-title">@_selectedResult.Title</span>
                                 <span class="preview-artist">@_selectedResult.Artist</span>
                             </div>
-                            <button type="button" class="preview-clear" @onclick="ClearSong" title="@T("Change song", "غيّر الأغنية")">✕</button>
+                            <button type="button" class="preview-clear" @onclick="ClearSong" title="Change song">✕</button>
                         </div>
                     }
                     else
@@ -308,17 +301,17 @@
                     }
 
                     <div class="form-field">
-                        <label>@T("Why this song?", "لماذا هذه الأغنية؟") <span class="optional">(@T("optional", "اختياري"))</span></label>
-                        <InputTextArea @bind-Value="_song.Note" placeholder="@T("Tell us why you love it…", "أخبرنا لماذا تحبها...")" rows="2" />
+                        <label>Why this song? <span class="optional">(optional)</span></label>
+                        <InputTextArea @bind-Value="_song.Note" placeholder="Tell us why you love it…" rows="2" />
                     </div>
 
                     @if (_songError)
                     {
-                        <p class="submit-error">@T("Something went wrong. Please try again.", "حدث خطأ. حاول مجدداً.")</p>
+                        <p class="submit-error">Something went wrong. Please try again.</p>
                     }
 
                     <button type="submit" class="rsvp-btn submit-btn" disabled="@_songSubmitting">
-                        @(_songSubmitting ? T("Adding…", "جارٍ الإضافة...") : T("Add to Playlist", "أضف للقائمة"))
+                        @(_songSubmitting ? "Adding…" : "Add to Playlist")
                     </button>
                 </EditForm>
             }
@@ -330,44 +323,44 @@
 @if (_commentOpen)
 {
     <div class="modal-overlay" @onclick="CloseCommentModal">
-        <div class="modal-box @(_isAr ? "modal-box--ar" : "")" @onclick:stopPropagation="true" dir="@(_isAr ? "rtl" : "ltr")">
+        <div class="modal-box" @onclick:stopPropagation="true">
 
             @if (_commentSubmitted)
             {
                 <div class="thank-you">
                     <p class="ty-ornament">✦</p>
-                    <h2>@T("Thank you", "شكراً")، @_comment.GuestName!</h2>
-                    <p>@T("Your comment has been noted with love.", "تم تسجيل تعليقك بكل محبة.")</p>
-                    <button class="rsvp-btn" @onclick="CloseCommentModal" style="margin-top:1.8rem">@T("Close", "إغلاق")</button>
+                    <h2>Thank you, @_comment.GuestName!</h2>
+                    <p>Your comment has been noted with love.</p>
+                    <button class="rsvp-btn" @onclick="CloseCommentModal" style="margin-top:1.8rem">Close</button>
                 </div>
             }
             else
             {
-                <h2 class="modal-title">✦ &nbsp; @T("Leave us a comment!", "اتركوا تعليقاً!")</h2>
-                <p class="modal-subtitle">@T("A kind word means the world to us", "كلمة طيبة تعني لنا الكثير")</p>
+                <h2 class="modal-title">✦ &nbsp; Leave us a comment!</h2>
+                <p class="modal-subtitle">A kind word means the world to us</p>
 
                 <EditForm Model="_comment" OnValidSubmit="HandleCommentSubmit">
                     <DataAnnotationsValidator />
 
                     <div class="form-field">
-                        <label>@T("Your Name", "اسمك")</label>
-                        <InputText @bind-Value="_comment.GuestName" placeholder="@T("Your full name", "اسمك الكامل")" />
+                        <label>Your Name</label>
+                        <InputText @bind-Value="_comment.GuestName" placeholder="Your full name" />
                         <ValidationMessage For="@(() => _comment.GuestName)" />
                     </div>
 
                     <div class="form-field">
-                        <label>@T("Your Comment", "تعليقك")</label>
-                        <InputTextArea @bind-Value="_comment.Message" placeholder="@T("Leave Mazen & Doha a message…", "اكتب رسالة لمازن وضحى...")" rows="3" />
+                        <label>Your Comment</label>
+                        <InputTextArea @bind-Value="_comment.Message" placeholder="Leave Mazen & Doha a message…" rows="3" />
                         <ValidationMessage For="@(() => _comment.Message)" />
                     </div>
 
                     @if (_commentError)
                     {
-                        <p class="submit-error">@T("Something went wrong. Please try again.", "حدث خطأ. حاول مجدداً.")</p>
+                        <p class="submit-error">Something went wrong. Please try again.</p>
                     }
 
                     <button type="submit" class="rsvp-btn submit-btn" disabled="@_commentSubmitting">
-                        @(_commentSubmitting ? T("Sending…", "جارٍ الإرسال...") : T("Send Comment", "أرسل التعليق"))
+                        @(_commentSubmitting ? "Sending…" : "Send Comment")
                     </button>
                 </EditForm>
             }
@@ -388,17 +381,12 @@
     private bool _envelopeVisible = true;
     private bool _envelopeOpening = false;
 
-    // ── Language toggle ───────────────────────────────────
-    private bool _isAr = false;
-    private string T(string en, string ar) => _isAr ? ar : en;
-    private void ToggleLanguage() => _isAr = !_isAr;
-
     private async Task OpenEnvelope()
     {
         if (_envelopeOpening) return;
         _envelopeOpening = true;
         StateHasChanged();
-        await Task.Delay(1750); // flap opens (0.95s) + overlay fades (0.55s starting at 1.1s) + buffer
+        await Task.Delay(1750);
         _envelopeVisible = false;
         StateHasChanged();
     }
