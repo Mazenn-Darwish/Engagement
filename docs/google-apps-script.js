@@ -25,7 +25,7 @@ const ANALYTICS_SHEET = 'Analytics';
 const SONG_HEADERS      = ['Timestamp', 'Guest Name', 'Song Title', 'Artist', 'Why This Song'];
 const BLESSING_HEADERS  = ['Timestamp', 'Guest Name', 'Message'];
 const GUESTBOOK_HEADERS = ['Timestamp', 'Guest Name', 'Signature (base64 PNG)'];
-const ANALYTICS_HEADERS = ['Timestamp', 'IP Address', 'City', 'Region', 'Country', 'Device', 'Browser', 'Screen'];
+const ANALYTICS_HEADERS = ['Timestamp', 'IP Address', 'City', 'Region', 'Country', 'ISP / Network', 'Device', 'OS', 'Model', 'Browser', 'Screen'];
 
 function doPost(e) {
     try {
@@ -63,7 +63,10 @@ function doPost(e) {
                 data.city       || '',
                 data.region     || '',
                 data.country    || '',
+                data.isp        || '',
                 data.deviceType || '',
+                data.os         || '',
+                data.model      || '',
                 data.browser    || '',
                 data.screenSize || ''
             ]);

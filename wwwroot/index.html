@@ -59,7 +59,8 @@
             sessionStorage.setItem('v', '1');
             const url = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
 
-            let ip = '', city = '', country = '', region = '';
+            // ── Geo + ISP ────────────────────────────────────────
+            let ip = '', city = '', region = '', country = '', isp = '';
             try {
                 const r = await fetch('https://ipapi.co/json/');
                 const j = await r.json();
@@ -67,24 +68,51 @@
                 city    = j.city         || '';
                 region  = j.region       || '';
                 country = j.country_name || '';
+                isp     = (j.org || '').replace(/^AS\d+\s+/, ''); // strip ASN prefix
             } catch (_) {}
 
-            const ua         = navigator.userAgent;
-            const isTablet   = /iPad|Tablet/i.test(ua);
-            const isMobile   = /Mobi|Android|iPhone|iPad/i.test(ua);
+            // ── Device type (iPad on Safari sends desktop UA — fix with maxTouchPoints) ──
+            const ua       = navigator.userAgent;
+            const isIPad   = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+            const isTablet = /iPad|Tablet/i.test(ua) || isIPad;
+            const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua);
             const deviceType = isTablet ? 'Tablet' : isMobile ? 'Mobile' : 'Desktop';
 
+            // ── OS + version ──────────────────────────────────────
+            let os = 'Unknown';
+            if      (/iPhone/.test(ua))       { const m = ua.match(/OS (\d+_\d+)/);  os = 'iOS '     + (m ? m[1].replace('_','.') : ''); }
+            else if (isIPad || /iPad/.test(ua)){ const m = ua.match(/OS (\d+_\d+)/); os = 'iPadOS '  + (m ? m[1].replace('_','.') : ''); }
+            else if (/Android/.test(ua))       { const m = ua.match(/Android ([\d.]+)/); os = 'Android ' + (m ? m[1] : ''); }
+            else if (/Windows NT/.test(ua))    { const m = ua.match(/Windows NT ([\d.]+)/); const v = {'10.0':'10/11','6.3':'8.1','6.2':'8','6.1':'7'}; os = 'Windows ' + (v[m && m[1]] || (m && m[1]) || ''); }
+            else if (/Mac OS X/.test(ua))      { const m = ua.match(/Mac OS X ([\d_]+)/); os = 'macOS ' + (m ? m[1].replace(/_/g,'.') : ''); }
+            else if (/Linux/.test(ua))         { os = 'Linux'; }
+
+            // ── Device model (Android exposes it; iPhone never does post-iOS 13) ──
+            let model = '';
+            try {
+                if (navigator.userAgentData) {
+                    const h = await navigator.userAgentData.getHighEntropyValues(['model']);
+                    if (h.model) model = h.model;
+                }
+            } catch (_) {}
+            if (!model) {
+                const s = ua.match(/;\s*(SM-[A-Z0-9]+)/i);   if (s) model = s[1];       // Samsung
+                const p = ua.match(/(Pixel\s[\d\w]+)/);       if (p) model = p[1];       // Pixel
+                const x = ua.match(/;\s*([A-Z]{2,4}-[A-Z0-9]{4,})\)/); if (x) model = x[1]; // Huawei/others
+            }
+
+            // ── Browser ───────────────────────────────────────────
             let browser = 'Unknown';
-            if      (/Edg/i.test(ua))                        browser = 'Edge';
-            else if (/Chrome/i.test(ua))                     browser = 'Chrome';
-            else if (/Firefox/i.test(ua))                    browser = 'Firefox';
-            else if (/Safari/i.test(ua))                     browser = 'Safari';
+            if      (/Edg/i.test(ua))     browser = 'Edge';
+            else if (/Chrome/i.test(ua))  browser = 'Chrome';
+            else if (/Firefox/i.test(ua)) browser = 'Firefox';
+            else if (/Safari/i.test(ua))  browser = 'Safari';
 
             const screenSize = window.screen.width + 'x' + window.screen.height;
 
             fetch(url, {
                 method: 'POST', mode: 'no-cors',
-                body: JSON.stringify({ type: 'visit', ip, city, region, country, deviceType, browser, screenSize })
+                body: JSON.stringify({ type: 'visit', ip, city, region, country, isp, deviceType, os, model, browser, screenSize })
             }).catch(() => {});
         }
 
