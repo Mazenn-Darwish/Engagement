@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mazen &amp; Doha · Engagement</title>
+    <base href="/Engagement/" />
+    <link href="_framework/dotnet.il2fotgm5e.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-5ua9ddIlImxd19WYEaakCmiPdgHgz7MZoZIQB1DvgKI=" />
+
+    <!-- Open Graph / WhatsApp / social sharing -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content="Mazen &amp; Doha — You're Invited ✦" />
+    <meta property="og:description" content="Join us to celebrate the engagement of Mazen &amp; Doha on September 11, 2026." />
+    <meta property="og:image"       content="og-image.png" />
+
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Mazen &amp; Doha — You're Invited ✦" />
+    <meta name="twitter:description" content="Join us to celebrate the engagement of Mazen &amp; Doha on September 11, 2026." />
+    <meta name="twitter:image"       content="og-image.png" />
+
+    <!-- Google Fonts: Cinzel + Cormorant Garamond + Great Vibes (script names) + Noto Naskh Arabic (Bismillah) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Great+Vibes&family=Noto+Naskh+Arabic:wght@400;500&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="css/app.css" />
+
+    <script type="importmap">{
+  "imports": {
+    "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.il2fotgm5e.js",
+    "./_framework/dotnet.native.js": "./_framework/dotnet.native.j9yxww2air.js",
+    "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js"
+  },
+  "scopes": {},
+  "integrity": {
+    "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
+    "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
+    "./_framework/dotnet.il2fotgm5e.js": "sha256-5ua9ddIlImxd19WYEaakCmiPdgHgz7MZoZIQB1DvgKI=",
+    "./_framework/dotnet.js": "sha256-5ua9ddIlImxd19WYEaakCmiPdgHgz7MZoZIQB1DvgKI=",
+    "./_framework/dotnet.native.j9yxww2air.js": "sha256-t2sLHIeFuKgbEH+wz5jXGlVRt+hMNlyCkCwLtVZUwws=",
+    "./_framework/dotnet.native.js": "sha256-t2sLHIeFuKgbEH+wz5jXGlVRt+hMNlyCkCwLtVZUwws=",
+    "./_framework/dotnet.runtime.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU=",
+    "./_framework/dotnet.runtime.r2kbxkuujc.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU="
+  }
+}</script>
+    <script>
+        // Decode path restored by 404.html redirect
+        (function(l) {
+            if (l.search[1] === '/') {
+                var decoded = l.search.slice(1).split('&').map(function(s) {
+                    return s.replace(/~and~/g, '&');
+                }).join('?');
+                window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+            }
+        }(window.location));
+    </script>
+</head>
+<body>
+
+    <div id="blazor-loading" aria-label="Loading" aria-live="polite">
+        <p class="loading-title">Mazen &amp; Doha</p>
+        <div class="loading-dots">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
+    <div id="app"></div>
+
+    <div id="blazor-error-ui" role="alert">
+        An unhandled error has occurred. <a href="." class="reload">Reload</a>
+    </div>
+
+    <script src="js/petals.js"></script>
+
+    <script>
+        function hideLoader() {
+            const el = document.getElementById('blazor-loading');
+            if (!el) return;
+            el.style.transition = 'opacity 0.9s ease';
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 950);
+        }
+
+        // ── Analytics: count one visit per browser session ───
+        async function countVisit() {
+            if (sessionStorage.getItem('v')) return;
+            sessionStorage.setItem('v', '1');
+            const url = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
+
+            // ── Geo + ISP ────────────────────────────────────────
+            let ip = '', city = '', region = '', country = '', isp = '';
+            try {
+                const r = await fetch('https://ipapi.co/json/');
+                const j = await r.json();
+                ip      = j.ip           || '';
+                city    = j.city         || '';
+                region  = j.region       || '';
+                country = j.country_name || '';
+                isp     = (j.org || '').replace(/^AS\d+\s+/, ''); // strip ASN prefix
+            } catch (_) {}
+
+            // ── Device type (iPad on Safari sends desktop UA — fix with maxTouchPoints) ──
+            const ua       = navigator.userAgent;
+            const isIPad   = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+            const isTablet = /iPad|Tablet/i.test(ua) || isIPad;
+            const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua);
+            const deviceType = isTablet ? 'Tablet' : isMobile ? 'Mobile' : 'Desktop';
+
+            // ── OS + version ──────────────────────────────────────
+            let os = 'Unknown';
+            if      (/iPhone/.test(ua))       { const m = ua.match(/OS (\d+_\d+)/);  os = 'iOS '     + (m ? m[1].replace('_','.') : ''); }
+            else if (isIPad || /iPad/.test(ua)){ const m = ua.match(/OS (\d+_\d+)/); os = 'iPadOS '  + (m ? m[1].replace('_','.') : ''); }
+            else if (/Android/.test(ua))       { const m = ua.match(/Android ([\d.]+)/); os = 'Android ' + (m ? m[1] : ''); }
+            else if (/Windows NT/.test(ua))    { const m = ua.match(/Windows NT ([\d.]+)/); const v = {'10.0':'10/11','6.3':'8.1','6.2':'8','6.1':'7'}; os = 'Windows ' + (v[m && m[1]] || (m && m[1]) || ''); }
+            else if (/Mac OS X/.test(ua))      { const m = ua.match(/Mac OS X ([\d_]+)/); os = 'macOS ' + (m ? m[1].replace(/_/g,'.') : ''); }
+            else if (/Linux/.test(ua))         { os = 'Linux'; }
+
+            // ── Device model (Android exposes it; iPhone never does post-iOS 13) ──
+            let model = '';
+            try {
+                if (navigator.userAgentData) {
+                    const h = await navigator.userAgentData.getHighEntropyValues(['model']);
+                    if (h.model) model = h.model;
+                }
+            } catch (_) {}
+            if (!model) {
+                const s = ua.match(/;\s*(SM-[A-Z0-9]+)/i);   if (s) model = s[1];       // Samsung
+                const p = ua.match(/(Pixel\s[\d\w]+)/);       if (p) model = p[1];       // Pixel
+                const x = ua.match(/;\s*([A-Z]{2,4}-[A-Z0-9]{4,})\)/); if (x) model = x[1]; // Huawei/others
+            }
+
+            // ── Browser ───────────────────────────────────────────
+            let browser = 'Unknown';
+            if      (/Edg/i.test(ua))     browser = 'Edge';
+            else if (/Chrome/i.test(ua))  browser = 'Chrome';
+            else if (/Firefox/i.test(ua)) browser = 'Firefox';
+            else if (/Safari/i.test(ua))  browser = 'Safari';
+
+            const screenSize = window.screen.width + 'x' + window.screen.height;
+
+            fetch(url, {
+                method: 'POST', mode: 'no-cors',
+                body: JSON.stringify({ type: 'visit', ip, city, region, country, isp, deviceType, os, model, browser, screenSize })
+            }).catch(() => {});
+        }
+
+        // ── Signature canvas ──────────────────────────────────
+        function initSignatureCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const wrap = canvas.closest('.sig-canvas-wrap');
+            const ctx  = canvas.getContext('2d');
+            let drawing = false;
+            let lastPos = null;
+
+            ctx.strokeStyle = '#2d5a27';
+            ctx.lineWidth   = 2.5;
+            ctx.lineCap     = 'round';
+            ctx.lineJoin    = 'round';
+
+            function getPos(e) {
+                const r = canvas.getBoundingClientRect();
+                const sx = canvas.width  / r.width;
+                const sy = canvas.height / r.height;
+                const src = e.touches ? e.touches[0] : e;
+                return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+            }
+
+            function onStart(e) {
+                e.preventDefault();
+                drawing = true;
+                lastPos = getPos(e);
+                if (wrap) wrap.classList.add('has-content');
+            }
+
+            function onMove(e) {
+                if (!drawing) return;
+                e.preventDefault();
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(lastPos.x, lastPos.y);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+                lastPos = pos;
+            }
+
+            function onEnd() { drawing = false; lastPos = null; }
+
+            canvas.addEventListener('mousedown',  onStart);
+            canvas.addEventListener('mousemove',  onMove);
+            canvas.addEventListener('mouseup',    onEnd);
+            canvas.addEventListener('mouseleave', onEnd);
+            canvas.addEventListener('touchstart', onStart, { passive: false });
+            canvas.addEventListener('touchmove',  onMove,  { passive: false });
+            canvas.addEventListener('touchend',   onEnd);
+        }
+
+        function clearSignatureCanvas(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            const wrap = canvas.closest('.sig-canvas-wrap');
+            if (wrap) wrap.classList.remove('has-content');
+        }
+
+        function isSignatureEmpty(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return true;
+            const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+            for (let i = 3; i < data.length; i += 4) {
+                if (data[i] > 0) return false;
+            }
+            return true;
+        }
+
+        function getSignatureDataUrl(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            return canvas ? canvas.toDataURL('image/png') : '';
+        }
+
+        async function postToSheet(url, payload) {
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(payload)
+                });
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        async function fetchSheetData(url) {
+            try {
+                const r = await fetch(url, { method: 'GET', mode: 'cors' });
+                return await r.text();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function downloadIcs(content, filename) {
+            const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+
+    <script src="_framework/blazor.webassembly.66stpp682q.js"></script>
+
+</body>
+</html>
