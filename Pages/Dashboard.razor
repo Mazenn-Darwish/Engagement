@@ -1,0 +1,306 @@
+@page "/dashboard"
+@inject IJSRuntime JS
+@inject DashboardService DashboardSvc
+
+<canvas id="petalCanvas"></canvas>
+<BotanicalCorners />
+
+@if (!_authenticated)
+{
+    <main class="hero">
+        <div class="hero-content">
+            <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
+            <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+            <h1 class="db-lock-title">Dashboard</h1>
+            <p class="getting-engaged" style="margin-bottom:2.2rem">Mazen &amp; Doha · Private Access</p>
+
+            <div class="db-lock-form">
+                <div class="form-field">
+                    <label>Admin Key</label>
+                    <input type="password"
+                           class="db-key-input"
+                           placeholder="Enter your admin key…"
+                           @bind="_keyInput"
+                           @bind:event="oninput"
+                           @onkeydown="OnGateKeyDown" />
+                </div>
+                @if (_authError)
+                {
+                    <p class="submit-error">Incorrect key — check your Google Apps Script settings.</p>
+                }
+                <button class="rsvp-btn submit-btn" @onclick="AuthenticateAsync" disabled="@_authLoading">
+                    @(_authLoading ? "Checking…" : "Unlock Dashboard")
+                </button>
+            </div>
+        </div>
+    </main>
+}
+else
+{
+    <div class="db-shell">
+
+        <header class="db-header">
+            <a href="/" class="db-back">← Invitation</a>
+            <div class="db-header-center">
+                <span class="db-header-logo">Mazen &amp; Doha</span>
+                <span class="db-header-sep">✦</span>
+                <span class="db-header-sub">Dashboard</span>
+            </div>
+            <div class="db-header-spacer"></div>
+        </header>
+
+        <nav class="db-tabs" role="tablist">
+            <button class="db-tab @(_tab=="analytics" ? "db-tab--active" : "")" @onclick='()=>SetTab("analytics")'>
+                Analytics
+                @if (_analytics != null) { <span class="db-badge">@_analytics.Count</span> }
+            </button>
+            <button class="db-tab @(_tab=="songs" ? "db-tab--active" : "")" @onclick='()=>SetTab("songs")'>
+                Songs
+                @if (_songs != null) { <span class="db-badge">@_songs.Count</span> }
+            </button>
+            <button class="db-tab @(_tab=="blessings" ? "db-tab--active" : "")" @onclick='()=>SetTab("blessings")'>
+                Blessings
+                @if (_blessings != null) { <span class="db-badge">@_blessings.Count</span> }
+            </button>
+            <button class="db-tab @(_tab=="guestbook" ? "db-tab--active" : "")" @onclick='()=>SetTab("guestbook")'>
+                Guestbook
+                @if (_guestbook != null) { <span class="db-badge">@_guestbook.Count</span> }
+            </button>
+        </nav>
+
+        <div class="db-body">
+
+            @* ── Analytics ─────────────────────────────────────────── *@
+            @if (_tab == "analytics")
+            {
+                <div class="db-stats">
+                    <div class="db-stat-card">
+                        <span class="db-stat-val">@TotalVisits</span>
+                        <span class="db-stat-lbl">Total Visits</span>
+                    </div>
+                    <div class="db-stat-card">
+                        <span class="db-stat-val">@UniqueCountries</span>
+                        <span class="db-stat-lbl">Countries</span>
+                    </div>
+                    <div class="db-stat-card">
+                        <span class="db-stat-val">@MobilePct</span>
+                        <span class="db-stat-lbl">Mobile</span>
+                    </div>
+                    <div class="db-stat-card">
+                        <span class="db-stat-val">@TopBrowser</span>
+                        <span class="db-stat-lbl">Top Browser</span>
+                    </div>
+                </div>
+
+                @if (_analytics?.Count > 0)
+                {
+                    <div class="db-table-wrap">
+                        <table class="db-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>City</th>
+                                    <th>Country</th>
+                                    <th>ISP / Network</th>
+                                    <th>Device</th>
+                                    <th>OS</th>
+                                    <th>Model</th>
+                                    <th>Browser</th>
+                                    <th>Screen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in _analytics)
+                                {
+                                    <tr>
+                                        <td>@row.Timestamp</td>
+                                        <td>@row.City</td>
+                                        <td>@row.Country</td>
+                                        <td>@row.ISP</td>
+                                        <td>@row.Device</td>
+                                        <td>@row.OS</td>
+                                        <td>@row.Model</td>
+                                        <td>@row.Browser</td>
+                                        <td>@row.Screen</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="db-empty">No visits recorded yet.</p>
+                }
+            }
+
+            @* ── Songs ─────────────────────────────────────────────── *@
+            else if (_tab == "songs")
+            {
+                @if (_songs == null)
+                {
+                    <div class="db-spinner"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+                }
+                else if (_songs.Count == 0)
+                {
+                    <p class="db-empty">No song suggestions yet.</p>
+                }
+                else
+                {
+                    <ol class="db-song-list">
+                        @foreach (var s in _songs)
+                        {
+                            <li class="db-song-item">
+                                <div class="db-song-num">♪</div>
+                                <div class="db-song-content">
+                                    <div class="db-song-main">
+                                        <span class="db-song-title">@s.SongTitle</span>
+                                        <span class="db-song-by">by @s.Artist</span>
+                                    </div>
+                                    <div class="db-song-meta">
+                                        <span class="db-song-guest">— @s.GuestName</span>
+                                        @if (!string.IsNullOrWhiteSpace(s.Note))
+                                        {
+                                            <span class="db-song-note">"@s.Note"</span>
+                                        }
+                                        <span class="db-song-date">@s.Timestamp</span>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ol>
+                }
+            }
+
+            @* ── Blessings ─────────────────────────────────────────── *@
+            else if (_tab == "blessings")
+            {
+                @if (_blessings == null)
+                {
+                    <div class="db-spinner"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+                }
+                else if (_blessings.Count == 0)
+                {
+                    <p class="db-empty">No blessings yet.</p>
+                }
+                else
+                {
+                    <div class="db-blessing-grid">
+                        @foreach (var b in _blessings)
+                        {
+                            <div class="db-blessing-card">
+                                <p class="db-blessing-orn">✦</p>
+                                <p class="db-blessing-name">@b.GuestName</p>
+                                <p class="db-blessing-msg">@b.Message</p>
+                                <p class="db-blessing-date">@b.Timestamp</p>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+
+            @* ── Guestbook ─────────────────────────────────────────── *@
+            else if (_tab == "guestbook")
+            {
+                @if (_guestbook == null)
+                {
+                    <div class="db-spinner"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+                }
+                else if (_guestbook.Count == 0)
+                {
+                    <p class="db-empty">No signatures yet.</p>
+                }
+                else
+                {
+                    <div class="db-sig-grid">
+                        @foreach (var g in _guestbook)
+                        {
+                            <div class="db-sig-card">
+                                @if (!string.IsNullOrEmpty(g.SignatureData))
+                                {
+                                    <img src="@g.SignatureData" class="db-sig-img" alt="Signature by @g.GuestName" />
+                                }
+                                else
+                                {
+                                    <div class="db-sig-empty-img">✒</div>
+                                }
+                                <p class="db-sig-name">@g.GuestName</p>
+                                <p class="db-sig-date">@g.Timestamp</p>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+}
+
+@code {
+    private bool   _authenticated;
+    private string _keyInput  = "";
+    private bool   _authLoading;
+    private bool   _authError;
+    private string _adminKey  = "";
+    private string _tab       = "analytics";
+
+    private List<AnalyticsRow>? _analytics;
+    private List<SongRow>?      _songs;
+    private List<BlessingRow>?  _blessings;
+    private List<GuestbookRow>? _guestbook;
+
+    // ── Computed stats ────────────────────────────────────────
+    private int    TotalVisits    => _analytics?.Count ?? 0;
+    private int    UniqueCountries => _analytics == null ? 0
+        : _analytics.Select(r => r.Country).Where(c => !string.IsNullOrWhiteSpace(c)).Distinct().Count();
+    private string MobilePct => _analytics is null or { Count: 0 } ? "—"
+        : $"{(int)Math.Round(100.0 * _analytics.Count(r => r.Device == "Mobile") / _analytics.Count)}%";
+    private string TopBrowser => _analytics is null or { Count: 0 } ? "—"
+        : _analytics.GroupBy(r => r.Browser).OrderByDescending(g => g.Count()).First().Key;
+
+    // ── Lifecycle ─────────────────────────────────────────────
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try { await JS.InvokeVoidAsync("initPetals"); } catch { }
+        try { await JS.InvokeVoidAsync("hideLoader"); } catch { }
+    }
+
+    // ── Auth ──────────────────────────────────────────────────
+    private async Task OnGateKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await AuthenticateAsync();
+    }
+
+    private async Task AuthenticateAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_keyInput)) return;
+        _authLoading = true;
+        _authError   = false;
+
+        var result = await DashboardSvc.GetAnalyticsAsync(_keyInput);
+        if (result == null)
+        {
+            _authError   = true;
+            _authLoading = false;
+            return;
+        }
+
+        _adminKey      = _keyInput;
+        _analytics     = result;
+        _authenticated = true;
+        _authLoading   = false;
+
+        _ = LoadRemainingAsync();
+    }
+
+    private async Task LoadRemainingAsync()
+    {
+        _songs     = await DashboardSvc.GetSongsAsync(_adminKey);
+        _blessings = await DashboardSvc.GetBlessingsAsync(_adminKey);
+        _guestbook = await DashboardSvc.GetGuestbookAsync(_adminKey);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void SetTab(string tab) => _tab = tab;
+}

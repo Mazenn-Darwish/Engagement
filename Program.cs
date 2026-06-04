@@ -12,5 +12,6 @@ builder.Services.AddScoped<SongService>();
 builder.Services.AddScoped<MusicSearchService>();
 builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<SignatureService>();
+builder.Services.AddScoped<DashboardService>();
 
 await builder.Build().RunAsync();

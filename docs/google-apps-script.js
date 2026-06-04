@@ -17,6 +17,9 @@
  *   Analytics  — one row per page visit (timestamp only)
  */
 
+// ── Admin key — CHANGE THIS before deploying, then use it to log in to /dashboard ──
+const ADMIN_KEY = '1uR-PA1lp3ZfrILnYUymQJnmNw-tcYvjlU8HBw2s-sJRgr76F7uozOGJb';
+
 const SONG_SHEET      = 'Songs';
 const BLESSING_SHEET  = 'Blessings';
 const GUESTBOOK_SHEET = 'Guestbook';
@@ -80,9 +83,46 @@ function doPost(e) {
     }
 }
 
-// Handles CORS OPTIONS preflight and can be used to health-check the URL
-function doGet() {
-    return jsonResponse({ status: 'ok', message: 'Webhook is live.' });
+// Authenticated data reader for the /dashboard page
+function doGet(e) {
+    const key   = (e.parameter && e.parameter.key)   || '';
+    const sheet = (e.parameter && e.parameter.sheet) || '';
+
+    if (!key || !sheet) {
+        return jsonResponse({ status: 'ok', message: 'Webhook is live.' });
+    }
+
+    if (key !== ADMIN_KEY) {
+        return jsonResponse({ error: 'Unauthorized' });
+    }
+
+    const sheetMap = {
+        analytics: ANALYTICS_SHEET,
+        songs:     SONG_SHEET,
+        blessings: BLESSING_SHEET,
+        guestbook: GUESTBOOK_SHEET
+    };
+
+    const name = sheetMap[sheet];
+    if (!name) return jsonResponse({ error: 'Unknown sheet: ' + sheet });
+
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sh = ss.getSheetByName(name);
+    if (!sh || sh.getLastRow() < 2) {
+        return ContentService.createTextOutput('[]').setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const data    = sh.getDataRange().getValues();
+    const headers = data[0].map(String);
+    const rows    = data.slice(1).map(row => {
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = (row[i] == null) ? '' : String(row[i]); });
+        return obj;
+    });
+
+    return ContentService
+        .createTextOutput(JSON.stringify(rows))
+        .setMimeType(ContentService.MimeType.JSON);
 }
 
 function getOrCreateNamedSheet(name, headers) {

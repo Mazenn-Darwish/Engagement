@@ -32,8 +32,16 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Mazen/Desktop/INV/Pages/Dashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGFzaGJvYXJkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Mazen/Desktop/INV/Pages/Index.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Mazen/Desktop/INV/Shared/BotanicalCorners.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXEJvdGFuaWNhbENvcm5lcnMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Mazen/Desktop/INV/_Imports.razor]
