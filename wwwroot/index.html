@@ -54,11 +54,17 @@
         }
 
         // ── Analytics: count one visit per browser session ───
-        function countVisit() {
+        async function countVisit() {
             if (sessionStorage.getItem('v')) return;
             sessionStorage.setItem('v', '1');
             const url = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
-            fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'visit' }) }).catch(() => {});
+            let ip = '';
+            try {
+                const r = await fetch('https://api.ipify.org?format=json');
+                const j = await r.json();
+                ip = j.ip || '';
+            } catch (_) {}
+            fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: 'visit', ip }) }).catch(() => {});
         }
 
         // ── Signature canvas ──────────────────────────────────
