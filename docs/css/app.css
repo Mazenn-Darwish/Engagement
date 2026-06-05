@@ -434,6 +434,8 @@ html, body {
 
 .search-input:focus { border-bottom-color: var(--green-dk); }
 .search-input::placeholder { color: rgba(74, 124, 66, 0.38); }
+.search-input::-webkit-search-cancel-button,
+.search-input::-webkit-search-decoration { display: none; }
 
 .search-spinner {
     position: absolute;
@@ -453,8 +455,15 @@ html, body {
     border-top: none;
     max-height: 220px;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     margin-top: -0.35rem;
     margin-bottom: 0.8rem;
+}
+
+@media (max-width: 600px) {
+    .search-results { max-height: 180px; }
+    .search-result { padding: 0.65rem 0.75rem; min-height: 52px; }
+    .result-art { width: 36px; height: 36px; }
 }
 
 .search-result {
@@ -601,10 +610,34 @@ html, body {
     border: 0.5px solid var(--green-dk);
     padding: clamp(1.6rem, 4.5vw, 2.8rem) clamp(1.4rem, 4vw, 2.4rem);
     width: min(520px, 96vw);
-    max-height: 92vh;
+    max-height: 92dvh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     box-shadow: 0 8px 50px rgba(30, 60, 25, 0.25);
     animation: slideUp 0.3s ease;
+}
+
+/* Mobile: bottom sheet so keyboard doesn't bury the content */
+@media (max-width: 600px) {
+    .modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+    .modal-box {
+        width: 100%;
+        max-height: 92dvh;
+        border-radius: 1.2rem 1.2rem 0 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        padding: 1.4rem 1.2rem 2rem;
+        animation: slideUpSheet 0.28s ease;
+    }
+}
+
+@keyframes slideUpSheet {
+    from { transform: translateY(100%); opacity: 0.6; }
+    to   { transform: translateY(0);    opacity: 1; }
 }
 
 @keyframes slideUp {

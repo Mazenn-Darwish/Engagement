@@ -246,23 +246,27 @@
                 <div class="form-field">
                     <label>Search for a Song</label>
                     <div class="search-input-wrap">
-                        <input class="search-input" type="text"
+                        <input class="search-input" type="search"
+                               inputmode="search"
                                value="@_searchQuery"
                                @oninput="OnSearchInput"
                                placeholder="Song name or artist…"
-                               autocomplete="off" />
+                               autocomplete="off"
+                               autocorrect="off"
+                               spellcheck="false" />
                         @if (_isSearching) { <span class="search-spinner">⟳</span> }
                     </div>
                 </div>
 
                 @if (_searchResults.Count > 0)
                 {
-                    <ul class="search-results">
+                    <ul class="search-results" id="song-results">
                         @foreach (var r in _searchResults)
                         {
                             <li class="search-result"
-                                @onpointerdown="() => SelectSong(r)"
-                                @onpointerdown:preventDefault="true">
+                                @onclick="() => SelectSong(r)"
+                                @ontouchend="() => SelectSong(r)"
+                                @ontouchend:preventDefault="true">
                                 @if (!string.IsNullOrEmpty(r.AlbumArt))
                                 {
                                     <img src="@r.AlbumArt" class="result-art" alt="" />

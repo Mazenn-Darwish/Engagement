@@ -9,7 +9,8 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<SongService>();
-builder.Services.AddScoped<MusicSearchService>();
+builder.Services.AddScoped<MusicSearchService>(_ =>
+    new MusicSearchService(new HttpClient { BaseAddress = new Uri("https://itunes.apple.com/") }));
 builder.Services.AddScoped<CommentService>();
 builder.Services.AddScoped<SignatureService>();
 builder.Services.AddScoped<DashboardService>();
