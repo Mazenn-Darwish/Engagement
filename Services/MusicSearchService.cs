@@ -1,4 +1,4 @@
-using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using INV.Models;
 
@@ -11,7 +11,10 @@ public class MusicSearchService(HttpClient http)
         try
         {
             var url = $"https://itunes.apple.com/search?term={Uri.EscapeDataString(query)}&media=music&entity=song&limit=6&country=us";
-            var response = await http.GetFromJsonAsync<ItunesResponse>(url);
+            // Use GetStringAsync to avoid Content-Type check — iTunes returns
+            // text/javascript which causes GetFromJsonAsync to throw in .NET 7+
+            var json = await http.GetStringAsync(url);
+            var response = JsonSerializer.Deserialize<ItunesResponse>(json);
             return response?.Results
                 .Where(r => !string.IsNullOrEmpty(r.TrackName))
                 .Select(r => new SongSearchResult(r.TrackName!, r.ArtistName ?? "", r.ArtworkUrl100))
@@ -32,7 +35,7 @@ internal sealed class ItunesResponse
 
 internal sealed class ItunesTrack
 {
-    [JsonPropertyName("trackName")]    public string? TrackName    { get; set; }
-    [JsonPropertyName("artistName")]   public string? ArtistName   { get; set; }
+    [JsonPropertyName("trackName")]     public string? TrackName     { get; set; }
+    [JsonPropertyName("artistName")]    public string? ArtistName    { get; set; }
     [JsonPropertyName("artworkUrl100")] public string? ArtworkUrl100 { get; set; }
 }
