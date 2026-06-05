@@ -449,6 +449,11 @@ html, body {
 
 @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
 
+.search-group {
+    display: flex;
+    flex-direction: column;
+}
+
 .search-results {
     list-style: none;
     border: 1px solid var(--border);
@@ -460,8 +465,19 @@ html, body {
     margin-bottom: 0.8rem;
 }
 
+/* On mobile: flip search group so results appear ABOVE the input,
+   keeping them visible when the virtual keyboard is open */
 @media (max-width: 600px) {
-    .search-results { max-height: 180px; }
+    .search-group {
+        flex-direction: column-reverse;
+    }
+    .search-results {
+        border-top: 1px solid var(--border);
+        border-bottom: none;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        max-height: 200px;
+    }
     .search-result { padding: 0.65rem 0.75rem; min-height: 52px; }
     .result-art { width: 36px; height: 36px; }
 }

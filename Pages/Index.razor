@@ -242,43 +242,45 @@
                 <h2 class="modal-title">♪ &nbsp; Suggest a Song</h2>
                 <p class="modal-subtitle">Search for a song to add to our playlist</p>
 
-                <!-- Search input lives outside EditForm so Enter key doesn't submit -->
-                <div class="form-field">
-                    <label>Search for a Song</label>
-                    <div class="search-input-wrap">
-                        <input class="search-input" type="search"
-                               inputmode="search"
-                               value="@_searchQuery"
-                               @oninput="OnSearchInput"
-                               placeholder="Song name or artist…"
-                               autocomplete="off"
-                               autocorrect="off"
-                               spellcheck="false" />
-                        @if (_isSearching) { <span class="search-spinner">⟳</span> }
+                <!-- Search group: column-reverse on mobile so results appear above input (above keyboard) -->
+                <div class="search-group">
+                    <div class="form-field">
+                        <label>Search for a Song</label>
+                        <div class="search-input-wrap">
+                            <input class="search-input" type="search"
+                                   inputmode="search"
+                                   value="@_searchQuery"
+                                   @oninput="OnSearchInput"
+                                   placeholder="Song name or artist…"
+                                   autocomplete="off"
+                                   autocorrect="off"
+                                   spellcheck="false" />
+                            @if (_isSearching) { <span class="search-spinner">⟳</span> }
+                        </div>
                     </div>
-                </div>
 
-                @if (_searchResults.Count > 0)
-                {
-                    <ul class="search-results" id="song-results">
-                        @foreach (var r in _searchResults)
-                        {
-                            <li class="search-result"
-                                @onclick="() => SelectSong(r)"
-                                @ontouchend="() => SelectSong(r)"
-                                @ontouchend:preventDefault="true">
-                                @if (!string.IsNullOrEmpty(r.AlbumArt))
-                                {
-                                    <img src="@r.AlbumArt" class="result-art" alt="" />
-                                }
-                                <div class="result-info">
-                                    <span class="result-title">@r.Title</span>
-                                    <span class="result-artist">@r.Artist</span>
-                                </div>
-                            </li>
-                        }
-                    </ul>
-                }
+                    @if (_searchResults.Count > 0)
+                    {
+                        <ul class="search-results" id="song-results">
+                            @foreach (var r in _searchResults)
+                            {
+                                <li class="search-result"
+                                    @onclick="() => SelectSong(r)"
+                                    @ontouchend="() => SelectSong(r)"
+                                    @ontouchend:preventDefault="true">
+                                    @if (!string.IsNullOrEmpty(r.AlbumArt))
+                                    {
+                                        <img src="@r.AlbumArt" class="result-art" alt="" />
+                                    }
+                                    <div class="result-info">
+                                        <span class="result-title">@r.Title</span>
+                                        <span class="result-artist">@r.Artist</span>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
 
                 <EditForm Model="_song" OnValidSubmit="HandleSongSubmit">
                     <DataAnnotationsValidator />
