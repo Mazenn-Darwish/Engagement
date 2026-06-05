@@ -260,7 +260,9 @@
                     <ul class="search-results">
                         @foreach (var r in _searchResults)
                         {
-                            <li class="search-result" @onclick="() => SelectSong(r)">
+                            <li class="search-result"
+                                @onpointerdown="() => SelectSong(r)"
+                                @onpointerdown:preventDefault="true">
                                 @if (!string.IsNullOrEmpty(r.AlbumArt))
                                 {
                                     <img src="@r.AlbumArt" class="result-art" alt="" />
