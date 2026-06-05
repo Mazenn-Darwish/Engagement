@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mazen &amp; Doha · Engagement</title>
     <base href="/" />
-    <link href="_framework/dotnet.0w0hq69axx.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-QJ9euTQvq2/D3ukFol+W3Jb3CpyVNDz6fgIKxf6mS4g=" />
+    <link href="_framework/dotnet.soctdplriz.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-hNkISnWuuo+n8FdMcIz1Ak0Jn3bZ0bGyUkRngZHpRxs=" />
 
     <!-- Open Graph / WhatsApp / social sharing -->
     <meta property="og:type"        content="website" />
@@ -28,20 +28,20 @@
     <script type="importmap">{
   "imports": {
     "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
-    "./_framework/dotnet.js": "./_framework/dotnet.0w0hq69axx.js",
     "./_framework/dotnet.native.js": "./_framework/dotnet.native.j9yxww2air.js",
-    "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js"
+    "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.soctdplriz.js"
   },
   "scopes": {},
   "integrity": {
     "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
     "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
-    "./_framework/dotnet.0w0hq69axx.js": "sha256-QJ9euTQvq2/D3ukFol+W3Jb3CpyVNDz6fgIKxf6mS4g=",
-    "./_framework/dotnet.js": "sha256-QJ9euTQvq2/D3ukFol+W3Jb3CpyVNDz6fgIKxf6mS4g=",
+    "./_framework/dotnet.js": "sha256-hNkISnWuuo+n8FdMcIz1Ak0Jn3bZ0bGyUkRngZHpRxs=",
     "./_framework/dotnet.native.j9yxww2air.js": "sha256-t2sLHIeFuKgbEH+wz5jXGlVRt+hMNlyCkCwLtVZUwws=",
     "./_framework/dotnet.native.js": "sha256-t2sLHIeFuKgbEH+wz5jXGlVRt+hMNlyCkCwLtVZUwws=",
     "./_framework/dotnet.runtime.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU=",
-    "./_framework/dotnet.runtime.r2kbxkuujc.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU="
+    "./_framework/dotnet.runtime.r2kbxkuujc.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU=",
+    "./_framework/dotnet.soctdplriz.js": "sha256-hNkISnWuuo+n8FdMcIz1Ak0Jn3bZ0bGyUkRngZHpRxs="
   }
 }</script>
     <script>
@@ -242,14 +242,15 @@
         }
 
         // Native input listener for song search — bypasses Blazor @oninput on mobile
-        // Music search via Google Apps Script proxy — server-side fetch bypasses all UA restrictions
-        var _scriptBase = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
+        // corsproxy.io proxies the iTunes request server-side — bypasses Apple's mobile UA block
         async function searchSongs(query) {
             try {
-                var url = _scriptBase + '?action=search&q=' + encodeURIComponent(query);
-                var r = await fetch(url, { method: 'GET', mode: 'cors' });
+                var target = 'https://itunes.apple.com/search?term=' + encodeURIComponent(query) +
+                             '&media=music&entity=song&limit=6&country=us';
+                var r = await fetch('https://corsproxy.io/?' + encodeURIComponent(target));
                 if (!r.ok) return '[]';
-                return await r.text();
+                var j = await r.json();
+                return JSON.stringify(j.results || []);
             } catch(e) {
                 return '[]';
             }
