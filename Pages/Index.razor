@@ -1,7 +1,7 @@
 @page "/"
+@using System.Text.Json
 @inject IJSRuntime JS
 @inject SongService SongService
-@inject MusicSearchService MusicSearch
 @inject CommentService CommentService
 @inject SignatureService SignatureService
 @implements IDisposable
@@ -611,7 +611,21 @@
             _isSearching = true;
             await InvokeAsync(StateHasChanged);
             await Task.Delay(380, cts.Token);
-            _searchResults = await MusicSearch.SearchAsync(_searchQuery);
+            cts.Token.ThrowIfCancellationRequested();
+
+            // JSONP bypasses CORS — works on all browsers including mobile
+            var data = await JS.InvokeAsync<JsonElement>("searchItunesJsonp", _searchQuery);
+            if (data.ValueKind == JsonValueKind.Array)
+            {
+                _searchResults = data.EnumerateArray()
+                    .Where(t => t.TryGetProperty("trackName", out var n) && n.GetString() is { Length: > 0 })
+                    .Select(t => new SongSearchResult(
+                        t.GetProperty("trackName").GetString()!,
+                        t.TryGetProperty("artistName",    out var a)   ? a.GetString()   ?? "" : "",
+                        t.TryGetProperty("artworkUrl100", out var img) ? img.GetString()      : null))
+                    .Take(6)
+                    .ToList();
+            }
         }
         catch (OperationCanceledException) { }
         catch { }
