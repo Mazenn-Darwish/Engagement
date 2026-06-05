@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mazen &amp; Doha · Engagement</title>
     <base href="/" />
-    <link href="_framework/dotnet.4tcfck7iib.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-aMUkMewM+5fd3Bl6CrL2AI3+0gevi+10YhxRHIuPHro=" />
+    <link href="_framework/dotnet.e1lf0czm9h.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-QniAvNJGwQVI7AlKTMwkw4vBM8PeY3TuSabbCvCl00c=" />
 
     <!-- Open Graph / WhatsApp / social sharing -->
     <meta property="og:type"        content="website" />
@@ -28,7 +28,7 @@
     <script type="importmap">{
   "imports": {
     "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
-    "./_framework/dotnet.js": "./_framework/dotnet.4tcfck7iib.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.e1lf0czm9h.js",
     "./_framework/dotnet.native.js": "./_framework/dotnet.native.rjbmzc4jpg.js",
     "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js",
     "./js/petals.js": "./js/petals.6wg45ofytb.js"
@@ -37,8 +37,8 @@
   "integrity": {
     "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
     "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
-    "./_framework/dotnet.4tcfck7iib.js": "sha256-aMUkMewM+5fd3Bl6CrL2AI3+0gevi+10YhxRHIuPHro=",
-    "./_framework/dotnet.js": "sha256-aMUkMewM+5fd3Bl6CrL2AI3+0gevi+10YhxRHIuPHro=",
+    "./_framework/dotnet.e1lf0czm9h.js": "sha256-QniAvNJGwQVI7AlKTMwkw4vBM8PeY3TuSabbCvCl00c=",
+    "./_framework/dotnet.js": "sha256-QniAvNJGwQVI7AlKTMwkw4vBM8PeY3TuSabbCvCl00c=",
     "./_framework/dotnet.native.js": "sha256-95bE510j3EADMNW2OKa/DMBhu8N632dl5HGeBfXNEf4=",
     "./_framework/dotnet.native.rjbmzc4jpg.js": "sha256-95bE510j3EADMNW2OKa/DMBhu8N632dl5HGeBfXNEf4=",
     "./_framework/dotnet.runtime.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU=",
@@ -50,7 +50,7 @@
     <script>
         // Decode path restored by 404.html redirect
         (function(l) {
-            if (l.search[1] === 'p') {
+            if (l.search[1] === '/') {
                 var decoded = l.search.slice(1).split('&').map(function(s) {
                     return s.replace(/~and~/g, '&');
                 }).join('?');
@@ -242,6 +242,13 @@
             } catch (e) {
                 return null;
             }
+        }
+
+        function openSignature(dataUrl) {
+            const w = window.open('', '_blank');
+            if (!w) return;
+            w.document.write('<body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="' + dataUrl + '" style="max-width:100vw;max-height:100vh;display:block"></body>');
+            w.document.close();
         }
 
         function downloadIcs(content, filename) {

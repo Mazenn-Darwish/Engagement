@@ -465,6 +465,9 @@ html, body {
     cursor: pointer;
     border-bottom: 1px solid var(--border);
     transition: background 0.15s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(45,90,39,0.12);
+    user-select: none;
 }
 
 .search-result:last-child { border-bottom: none; }
@@ -1159,7 +1162,8 @@ html, body {
 
 /* Dashboard shell */
 .db-shell {
-    min-height: 100dvh;
+    height: 100dvh;
+    overflow: hidden;
     background: var(--bg);
     display: flex;
     flex-direction: column;
@@ -1167,16 +1171,14 @@ html, body {
 
 /* Header */
 .db-header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 1.5rem;
-    background: rgba(245,239,230,0.92);
-    backdrop-filter: blur(8px);
+    background: rgba(245,239,230,0.96);
     border-bottom: 1px solid var(--border);
+    gap: 0.5rem;
 }
 .db-back {
     font-family: var(--font-display);
@@ -1186,6 +1188,7 @@ html, body {
     text-decoration: none;
     transition: color 0.2s;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 .db-back:hover { color: var(--green-dk); }
 .db-header-center {
@@ -1213,6 +1216,7 @@ html, body {
 
 /* Tabs */
 .db-tabs {
+    flex-shrink: 0;
     display: flex;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -1220,9 +1224,6 @@ html, body {
     background: var(--bg);
     border-bottom: 2px solid var(--border);
     padding: 0 1rem;
-    position: sticky;
-    top: 53px;
-    z-index: 40;
 }
 .db-tabs::-webkit-scrollbar { display: none; }
 .db-tab {
@@ -1265,7 +1266,10 @@ html, body {
 /* Body */
 .db-body {
     flex: 1;
-    padding: 2rem 1.5rem 4rem;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1.5rem 1.5rem 4rem;
     max-width: 1100px;
     width: 100%;
     margin: 0 auto;
@@ -1317,27 +1321,29 @@ html, body {
 /* Analytics table */
 .db-table-wrap {
     overflow-x: auto;
+    overflow-y: visible;
     border: 1px solid var(--border);
     border-radius: 0.5rem;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
 }
 .db-table {
     width: 100%;
     border-collapse: collapse;
-    font-family: var(--font-body);
-    font-size: clamp(0.8rem, 1.4vw, 0.95rem);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: clamp(0.78rem, 1.3vw, 0.88rem);
     white-space: nowrap;
 }
 .db-table thead tr { background: var(--green-dk); color: var(--bg); }
 .db-table th {
     padding: 0.65rem 1rem;
-    font-family: var(--font-display);
-    font-size: 0.6rem;
-    letter-spacing: 0.16em;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
     font-weight: 600;
     text-align: left;
 }
-.db-table td { padding: 0.55rem 1rem; color: var(--text); border-bottom: 1px solid var(--border); }
+.db-table td { padding: 0.55rem 1rem; color: var(--text); border-bottom: 1px solid var(--border); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 .db-table tbody tr:last-child td { border-bottom: none; }
 .db-table tbody tr:nth-child(even) { background: rgba(45,90,39,0.04); }
 .db-table tbody tr:hover { background: rgba(45,90,39,0.08); }
@@ -1390,19 +1396,34 @@ html, body {
 }
 .db-sig-card { background: #fff; border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; display: flex; flex-direction: column; }
 .db-sig-img { width: 100%; height: 120px; object-fit: contain; background: #fff; border-bottom: 1px solid var(--border); padding: 0.5rem; box-sizing: border-box; }
+.db-sig-img--click { cursor: zoom-in; }
 .db-sig-empty-img { height: 120px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--green-md); opacity: 0.3; border-bottom: 1px solid var(--border); }
 .db-sig-name { font-family: var(--font-display); font-size: 0.68rem; letter-spacing: 0.16em; color: var(--green-dk); font-weight: 600; padding: 0.6rem 0.8rem 0.1rem; margin: 0; }
 .db-sig-date { font-family: var(--font-body); font-size: 0.78rem; color: var(--green-md); opacity: 0.55; padding: 0 0.8rem 0.7rem; margin: 0; }
 
 /* Responsive */
 @media (max-width: 700px) {
-    .db-stats { grid-template-columns: repeat(2, 1fr); }
-    .db-header-spacer { width: 60px; }
-    .db-body { padding: 1.2rem 1rem 3rem; }
-}
-@media (max-width: 420px) {
-    .db-stats { grid-template-columns: repeat(2, 1fr); gap: 0.7rem; }
-    .db-stat-card { padding: 0.9rem 0.7rem; }
-    .db-tab { padding: 0.65rem 0.9rem; }
     .db-header { padding: 0.65rem 1rem; }
+    .db-header-spacer { display: none; }
+    .db-header-center { justify-content: flex-start; }
+    .db-header-logo { font-size: 1.15rem; }
+    .db-body { padding: 1rem 0.85rem 3rem; }
+    .db-stats { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.25rem; }
+    .db-stat-card { padding: 0.9rem 0.75rem; }
+    .db-stat-val { font-size: 1.6rem; }
+    .db-table { font-size: 0.78rem; }
+    .db-table th, .db-table td { padding: 0.45rem 0.7rem; }
+    .db-blessing-grid { grid-template-columns: 1fr; }
+    .db-sig-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+    .db-sig-img { height: 100px; }
+    .db-song-date { margin-left: 0; width: 100%; }
+    .db-back { font-size: 0.65rem; }
+}
+@media (max-width: 400px) {
+    .db-header-sub { display: none; }
+    .db-header-sep { display: none; }
+    .db-stats { gap: 0.55rem; }
+    .db-stat-card { padding: 0.75rem 0.6rem; }
+    .db-tab { padding: 0.6rem 0.75rem; font-size: 0.58rem; }
+    .db-sig-grid { grid-template-columns: 1fr; }
 }
