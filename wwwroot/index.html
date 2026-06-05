@@ -223,6 +223,16 @@
             }
         }
 
+        // Native input listener for song search — bypasses Blazor @oninput on mobile
+        function initSongSearchInput(dotnetRef) {
+            const input = document.getElementById('song-search-input');
+            if (!input || input._songAttached) return;
+            input._songAttached = true;
+            input.addEventListener('input', function() {
+                dotnetRef.invokeMethodAsync('JsSongInput', input.value || '').catch(function(){});
+            });
+        }
+
         function openSignature(dataUrl) {
             const w = window.open('', '_blank');
             if (!w) return;

@@ -247,10 +247,10 @@
                     <div class="form-field">
                         <label>Search for a Song</label>
                         <div class="search-input-wrap">
-                            <input class="search-input" type="search"
-                                   inputmode="search"
+                            <input id="song-search-input"
+                                   class="search-input"
+                                   type="text"
                                    value="@_searchQuery"
-                                   @oninput="OnSearchInput"
                                    placeholder="Song name or artist…"
                                    autocomplete="off"
                                    autocorrect="off"
@@ -465,6 +465,7 @@
     private SongSearchResult? _selectedResult;
     private CancellationTokenSource _searchCts = new();
     private bool _isSearching;
+    private DotNetObjectReference<Index>? _dotnetRef;
 
     // ── Signature / guestbook modal ──────────────────────
     private bool _sigOpen;
@@ -548,12 +549,16 @@
             try { await JS.InvokeVoidAsync("initPetals");  } catch { }
             try { await JS.InvokeVoidAsync("hideLoader");  } catch { }
             try { await JS.InvokeVoidAsync("countVisit");  } catch { }
-            return;
         }
         if (_sigOpen && !_sigCanvasReady)
         {
             _sigCanvasReady = true;
             try { await JS.InvokeVoidAsync("initSignatureCanvas", "sigCanvas"); } catch { }
+        }
+        if (_songOpen)
+        {
+            _dotnetRef ??= DotNetObjectReference.Create(this);
+            try { await JS.InvokeVoidAsync("initSongSearchInput", _dotnetRef); } catch { }
         }
     }
 
@@ -584,9 +589,10 @@
 
     private void CloseSongModal() => _songOpen = false;
 
-    private async Task OnSearchInput(ChangeEventArgs e)
+    [JSInvokable]
+    public async Task JsSongInput(string value)
     {
-        _searchQuery    = e.Value?.ToString() ?? "";
+        _searchQuery    = value;
         _selectedResult = null;
         _song.SongTitle = "";
         _song.Artist    = "";
@@ -594,17 +600,26 @@
 
         _searchCts.Cancel();
         _searchCts = new CancellationTokenSource();
+        var cts = _searchCts;
+
+        await InvokeAsync(StateHasChanged);
 
         if (_searchQuery.Length < 2) return;
 
         try
         {
             _isSearching = true;
-            await Task.Delay(420, _searchCts.Token);
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(380, cts.Token);
             _searchResults = await MusicSearch.SearchAsync(_searchQuery);
         }
         catch (OperationCanceledException) { }
-        finally { _isSearching = false; }
+        catch { }
+        finally
+        {
+            _isSearching = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private void SelectSong(SongSearchResult result)
@@ -687,5 +702,6 @@
         _cts.Dispose();
         _searchCts.Cancel();
         _searchCts.Dispose();
+        _dotnetRef?.Dispose();
     }
 }
