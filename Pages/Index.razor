@@ -257,7 +257,6 @@
                                    spellcheck="false" />
                             @if (_isSearching) { <span class="search-spinner">⟳</span> }
                         </div>
-                        @if (!string.IsNullOrEmpty(_dbg)) { <p style="font-size:0.7rem;color:#b03030;margin-top:0.3rem">@_dbg</p> }
                     </div>
 
                     @if (_searchResults.Count > 0)
@@ -467,7 +466,6 @@
     private CancellationTokenSource _searchCts = new();
     private bool _isSearching;
     private DotNetObjectReference<Index>? _dotnetRef;
-    private string _dbg = "";
 
     // ── Signature / guestbook modal ──────────────────────
     private bool _sigOpen;
@@ -599,7 +597,6 @@
         _song.SongTitle = "";
         _song.Artist    = "";
         _searchResults  = [];
-        _dbg            = $"Typed: '{value}'";
 
         _searchCts.Cancel();
         _searchCts = new CancellationTokenSource();
@@ -612,14 +609,12 @@
         try
         {
             _isSearching = true;
-            _dbg = "Calling API…";
             await InvokeAsync(StateHasChanged);
             await Task.Delay(380, cts.Token);
             _searchResults = await MusicSearch.SearchAsync(_searchQuery);
-            _dbg = $"API returned {_searchResults.Count} results";
         }
-        catch (OperationCanceledException) { _dbg = "Cancelled"; }
-        catch (Exception ex) { _dbg = $"Error: {ex.GetType().Name} {ex.Message}"; }
+        catch (OperationCanceledException) { }
+        catch { }
         finally
         {
             _isSearching = false;

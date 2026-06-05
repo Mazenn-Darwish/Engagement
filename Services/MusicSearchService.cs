@@ -10,7 +10,7 @@ public class MusicSearchService(HttpClient http)
     {
         try
         {
-            var url = $"https://itunes.apple.com/search?term={Uri.EscapeDataString(query)}&media=music&entity=song&limit=6";
+            var url = $"https://itunes.apple.com/search?term={Uri.EscapeDataString(query)}&media=music&entity=song&limit=6&country=us";
             var response = await http.GetFromJsonAsync<ItunesResponse>(url);
             return response?.Results
                 .Where(r => !string.IsNullOrEmpty(r.TrackName))
