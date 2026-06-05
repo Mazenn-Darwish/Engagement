@@ -257,6 +257,7 @@
                                    spellcheck="false" />
                             @if (_isSearching) { <span class="search-spinner">⟳</span> }
                         </div>
+                        @if (!string.IsNullOrEmpty(_dbg)) { <p style="font-size:0.65rem;color:#b03030;margin-top:4px;word-break:break-all">@_dbg</p> }
                     </div>
 
                     @if (_searchResults.Count > 0)
@@ -466,6 +467,7 @@
     private CancellationTokenSource _searchCts = new();
     private bool _isSearching;
     private DotNetObjectReference<Index>? _dotnetRef;
+    private string _dbg = "";
 
     // ── Signature / guestbook modal ──────────────────────
     private bool _sigOpen;
@@ -592,6 +594,7 @@
     [JSInvokable]
     public async Task JsSongInput(string value)
     {
+        _dbg            = $"1:called '{value}'";
         _searchQuery    = value;
         _selectedResult = null;
         _song.SongTitle = "";
@@ -604,17 +607,20 @@
 
         await InvokeAsync(StateHasChanged);
 
-        if (_searchQuery.Length < 2) return;
+        if (_searchQuery.Length < 2) { _dbg = "2:too short"; await InvokeAsync(StateHasChanged); return; }
 
         try
         {
             _isSearching = true;
+            _dbg = "3:searching…";
             await InvokeAsync(StateHasChanged);
             await Task.Delay(380, cts.Token);
             cts.Token.ThrowIfCancellationRequested();
 
-            // JSONP bypasses CORS — works on all browsers including mobile
+            _dbg = "4:calling jsonp…";
+            await InvokeAsync(StateHasChanged);
             var data = await JS.InvokeAsync<JsonElement>("searchItunesJsonp", _searchQuery);
+            _dbg = $"5:kind={data.ValueKind} len={(data.ValueKind == JsonValueKind.Array ? data.GetArrayLength() : -1)}";
             if (data.ValueKind == JsonValueKind.Array)
             {
                 _searchResults = data.EnumerateArray()
@@ -625,10 +631,11 @@
                         t.TryGetProperty("artworkUrl100", out var img) ? img.GetString()      : null))
                     .Take(6)
                     .ToList();
+                _dbg = $"6:results={_searchResults.Count}";
             }
         }
-        catch (OperationCanceledException) { }
-        catch { }
+        catch (OperationCanceledException) { _dbg = "cancelled"; }
+        catch (Exception ex) { _dbg = $"ERR:{ex.GetType().Name}:{ex.Message[..Math.Min(60,ex.Message.Length)]}"; }
         finally
         {
             _isSearching = false;
