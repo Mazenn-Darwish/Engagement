@@ -224,26 +224,17 @@
         }
 
         // Native input listener for song search — bypasses Blazor @oninput on mobile
-        // Deezer JSONP search — works on all browsers/UAs, no CORS issues
-        function searchSongs(query) {
-            return new Promise(function(resolve) {
-                var cb = '_dcb' + Date.now();
-                var script = document.createElement('script');
-                var timer = setTimeout(function() { cleanup(); resolve('[]'); }, 8000);
-                function cleanup() {
-                    clearTimeout(timer);
-                    try { document.head.removeChild(script); } catch(e) {}
-                    delete window[cb];
-                }
-                window[cb] = function(data) {
-                    cleanup();
-                    resolve(JSON.stringify((data && data.data) || []));
-                };
-                script.onerror = function() { cleanup(); resolve('[]'); };
-                script.src = 'https://api.deezer.com/search?q=' + encodeURIComponent(query) +
-                    '&limit=6&callback=' + cb;
-                document.head.appendChild(script);
-            });
+        // Music search via Google Apps Script proxy — server-side fetch bypasses all UA restrictions
+        var _scriptBase = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
+        async function searchSongs(query) {
+            try {
+                var url = _scriptBase + '?action=search&q=' + encodeURIComponent(query);
+                var r = await fetch(url, { method: 'GET', mode: 'cors' });
+                if (!r.ok) return '[]';
+                return await r.text();
+            } catch(e) {
+                return '[]';
+            }
         }
 
         function initSongSearchInput(dotnetRef) {

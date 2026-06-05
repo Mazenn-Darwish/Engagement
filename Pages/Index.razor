@@ -612,15 +612,11 @@
             await Task.Delay(380, cts.Token);
             cts.Token.ThrowIfCancellationRequested();
 
-            // Deezer JSONP — returns JSON string of the tracks array
             var json = await JS.InvokeAsync<string>("searchSongs", _searchQuery);
-            var tracks = System.Text.Json.JsonSerializer.Deserialize<List<DeezerTrack>>(json) ?? [];
+            var tracks = System.Text.Json.JsonSerializer.Deserialize<List<ItunesTrackResult>>(json) ?? [];
             _searchResults = tracks
-                .Where(t => !string.IsNullOrEmpty(t.Title))
-                .Select(t => new SongSearchResult(
-                    t.Title!,
-                    t.Artist?.Name ?? "",
-                    t.Album?.CoverMedium))
+                .Where(t => !string.IsNullOrEmpty(t.TrackName))
+                .Select(t => new SongSearchResult(t.TrackName!, t.ArtistName ?? "", t.ArtworkUrl100))
                 .ToList();
         }
         catch (OperationCanceledException) { }
@@ -632,19 +628,11 @@
         }
     }
 
-    private sealed class DeezerTrack
+    private sealed class ItunesTrackResult
     {
-        [System.Text.Json.Serialization.JsonPropertyName("title")]  public string? Title  { get; set; }
-        [System.Text.Json.Serialization.JsonPropertyName("artist")] public DeezerArtist? Artist { get; set; }
-        [System.Text.Json.Serialization.JsonPropertyName("album")]  public DeezerAlbum?  Album  { get; set; }
-    }
-    private sealed class DeezerArtist
-    {
-        [System.Text.Json.Serialization.JsonPropertyName("name")] public string? Name { get; set; }
-    }
-    private sealed class DeezerAlbum
-    {
-        [System.Text.Json.Serialization.JsonPropertyName("cover_medium")] public string? CoverMedium { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("trackName")]     public string? TrackName     { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("artistName")]    public string? ArtistName    { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("artworkUrl100")] public string? ArtworkUrl100 { get; set; }
     }
 
     private void SelectSong(SongSearchResult result)

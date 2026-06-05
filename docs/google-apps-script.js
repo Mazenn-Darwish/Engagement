@@ -85,8 +85,26 @@ function doPost(e) {
 
 // Authenticated data reader for the /dashboard page
 function doGet(e) {
-    const key   = (e.parameter && e.parameter.key)   || '';
-    const sheet = (e.parameter && e.parameter.sheet) || '';
+    const key    = (e.parameter && e.parameter.key)    || '';
+    const sheet  = (e.parameter && e.parameter.sheet)  || '';
+    const action = (e.parameter && e.parameter.action) || '';
+
+    // Public music search proxy — no auth needed
+    if (action === 'search') {
+        const q = (e.parameter && e.parameter.q) || '';
+        if (!q) return jsonResponse({ error: 'No query' });
+        try {
+            const url = 'https://itunes.apple.com/search?term=' + encodeURIComponent(q) +
+                        '&media=music&entity=song&limit=6&country=us';
+            const resp = UrlFetchApp.fetch(url);
+            const data = JSON.parse(resp.getContentText());
+            return ContentService
+                .createTextOutput(JSON.stringify(data.results || []))
+                .setMimeType(ContentService.MimeType.JSON);
+        } catch(err) {
+            return ContentService.createTextOutput('[]').setMimeType(ContentService.MimeType.JSON);
+        }
+    }
 
     if (!key || !sheet) {
         return jsonResponse({ status: 'ok', message: 'Webhook is live.' });
