@@ -35,6 +35,18 @@ jobs:
       - name: Publish
         run: dotnet publish -c Release -o publish
 
+      - name: Fix base href for custom domain
+        run: |
+          sed -i 's|<base href="/Engagement/" />|<base href="/" />|g' publish/wwwroot/index.html
+          sed -i 's|<base href="/engagement/" />|<base href="/" />|g' publish/wwwroot/index.html
+          echo "Base href fixed"
+
+      - name: Copy CNAME
+        run: |
+          cp wwwroot/CNAME publish/wwwroot/CNAME
+          echo "CNAME contents:"
+          cat publish/wwwroot/CNAME
+
       - name: Verify publish output
         run: |
           echo "=== wwwroot top-level ==="
