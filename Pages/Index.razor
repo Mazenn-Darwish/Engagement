@@ -256,7 +256,6 @@
                                    spellcheck="false" />
                             @if (_isSearching) { <span class="search-spinner">⟳</span> }
                         </div>
-                        @if (!string.IsNullOrEmpty(_dbg)) { <p style="font-size:0.65rem;color:#b03030;margin-top:4px;word-break:break-all">@_dbg</p> }
                     </div>
 
                     @if (_searchResults.Count > 0)
@@ -466,7 +465,6 @@
     private CancellationTokenSource _searchCts = new();
     private bool _isSearching;
     private DotNetObjectReference<Index>? _dotnetRef;
-    private string _dbg = "";
 
     // ── Signature / guestbook modal ──────────────────────
     private bool _sigOpen;
@@ -593,7 +591,6 @@
     [JSInvokable]
     public async Task JsSongInput(string value)
     {
-        _dbg            = $"1:called '{value}'";
         _searchQuery    = value;
         _selectedResult = null;
         _song.SongTitle = "";
@@ -606,32 +603,48 @@
 
         await InvokeAsync(StateHasChanged);
 
-        if (_searchQuery.Length < 2) { _dbg = "2:too short"; await InvokeAsync(StateHasChanged); return; }
+        if (_searchQuery.Length < 2) return;
 
         try
         {
             _isSearching = true;
-            _dbg = "3:searching…";
             await InvokeAsync(StateHasChanged);
             await Task.Delay(380, cts.Token);
             cts.Token.ThrowIfCancellationRequested();
 
-            _dbg = "4:calling jsonp…";
-            await InvokeAsync(StateHasChanged);
-            // JS now returns raw JSON string so we can see exactly what iTunes sends
-            var raw = await JS.InvokeAsync<string>("searchItunesJsonp", _searchQuery);
-            _dbg = $"RAW:{raw}";
-            await InvokeAsync(StateHasChanged);
-            // pause so debug is visible
-            await Task.Delay(5000);
+            // Deezer JSONP — returns JSON string of the tracks array
+            var json = await JS.InvokeAsync<string>("searchSongs", _searchQuery);
+            var tracks = System.Text.Json.JsonSerializer.Deserialize<List<DeezerTrack>>(json) ?? [];
+            _searchResults = tracks
+                .Where(t => !string.IsNullOrEmpty(t.Title))
+                .Select(t => new SongSearchResult(
+                    t.Title!,
+                    t.Artist?.Name ?? "",
+                    t.Album?.CoverMedium))
+                .ToList();
         }
-        catch (OperationCanceledException) { _dbg = "cancelled"; }
-        catch (Exception ex) { _dbg = $"ERR:{ex.GetType().Name}:{ex.Message[..Math.Min(60,ex.Message.Length)]}"; }
+        catch (OperationCanceledException) { }
+        catch { }
         finally
         {
             _isSearching = false;
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    private sealed class DeezerTrack
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("title")]  public string? Title  { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("artist")] public DeezerArtist? Artist { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("album")]  public DeezerAlbum?  Album  { get; set; }
+    }
+    private sealed class DeezerArtist
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("name")] public string? Name { get; set; }
+    }
+    private sealed class DeezerAlbum
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("cover_medium")] public string? CoverMedium { get; set; }
     }
 
     private void SelectSong(SongSearchResult result)
