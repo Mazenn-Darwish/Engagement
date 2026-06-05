@@ -1,5 +1,4 @@
 @page "/"
-@using System.Text.Json
 @inject IJSRuntime JS
 @inject SongService SongService
 @inject CommentService CommentService
@@ -619,28 +618,12 @@
 
             _dbg = "4:calling jsonp…";
             await InvokeAsync(StateHasChanged);
-            var data = await JS.InvokeAsync<JsonElement>("searchItunesJsonp", _searchQuery);
-            var arrLen = data.ValueKind == JsonValueKind.Array ? data.GetArrayLength() : -1;
-            _dbg = $"5:len={arrLen}";
-            if (arrLen > 0)
-            {
-                var first = data.EnumerateArray().First();
-                var props = string.Join(",", first.EnumerateObject().Select(p => p.Name).Take(8));
-                _dbg += $" | props:{props}";
-            }
+            // JS now returns raw JSON string so we can see exactly what iTunes sends
+            var raw = await JS.InvokeAsync<string>("searchItunesJsonp", _searchQuery);
+            _dbg = $"RAW:{raw}";
             await InvokeAsync(StateHasChanged);
-            if (data.ValueKind == JsonValueKind.Array)
-            {
-                _searchResults = data.EnumerateArray()
-                    .Where(t => t.TryGetProperty("trackName", out var n) && n.GetString() is { Length: > 0 })
-                    .Select(t => new SongSearchResult(
-                        t.GetProperty("trackName").GetString()!,
-                        t.TryGetProperty("artistName",    out var a)   ? a.GetString()   ?? "" : "",
-                        t.TryGetProperty("artworkUrl100", out var img) ? img.GetString()      : null))
-                    .Take(6)
-                    .ToList();
-                _dbg = $"6:results={_searchResults.Count}";
-            }
+            // pause so debug is visible
+            await Task.Delay(5000);
         }
         catch (OperationCanceledException) { _dbg = "cancelled"; }
         catch (Exception ex) { _dbg = $"ERR:{ex.GetType().Name}:{ex.Message[..Math.Min(60,ex.Message.Length)]}"; }

@@ -235,8 +235,8 @@
                     try { document.head.removeChild(script); } catch(e) {}
                     delete window[cb];
                 }
-                window[cb] = function(data) { cleanup(); resolve((data && data.results) || []); };
-                script.onerror = function() { cleanup(); resolve([]); };
+                window[cb] = function(data) { cleanup(); resolve(JSON.stringify(data).substring(0, 400)); };
+                script.onerror = function() { cleanup(); resolve('SCRIPT_ERROR'); };
                 script.src = 'https://itunes.apple.com/search?term=' + encodeURIComponent(query) +
                     '&media=music&entity=song&limit=6&country=us&callback=' + cb;
                 document.head.appendChild(script);
