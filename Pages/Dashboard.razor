@@ -99,6 +99,7 @@ else
                             <thead>
                                 <tr>
                                     <th>Date</th>
+                                    <th>IP</th>
                                     <th>City</th>
                                     <th>Country</th>
                                     <th>ISP / Network</th>
@@ -114,6 +115,7 @@ else
                                 {
                                     <tr>
                                         <td>@row.Timestamp</td>
+                                        <td>@row.IP</td>
                                         <td>@row.City</td>
                                         <td>@row.Country</td>
                                         <td>@row.ISP</td>
@@ -218,7 +220,9 @@ else
                             <div class="db-sig-card">
                                 @if (!string.IsNullOrEmpty(g.SignatureData))
                                 {
-                                    <img src="@g.SignatureData" class="db-sig-img" alt="Signature by @g.GuestName" />
+                                    <img src="@g.SignatureData" class="db-sig-img db-sig-img--click" alt="Signature by @g.GuestName"
+                                         @onclick="@(async () => await JS.InvokeVoidAsync("openSignature", g.SignatureData))"
+                                         title="Click to view full size" />
                                 }
                                 else
                                 {

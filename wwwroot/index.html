@@ -29,7 +29,7 @@
     <script>
         // Decode path restored by 404.html redirect
         (function(l) {
-            if (l.search[1] === 'p') {
+            if (l.search[1] === '/') {
                 var decoded = l.search.slice(1).split('&').map(function(s) {
                     return s.replace(/~and~/g, '&');
                 }).join('?');
@@ -221,6 +221,13 @@
             } catch (e) {
                 return null;
             }
+        }
+
+        function openSignature(dataUrl) {
+            const w = window.open('', '_blank');
+            if (!w) return;
+            w.document.write('<body style="margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh"><img src="' + dataUrl + '" style="max-width:100vw;max-height:100vh;display:block"></body>');
+            w.document.close();
         }
 
         function downloadIcs(content, filename) {
