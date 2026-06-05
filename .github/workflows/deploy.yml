@@ -46,13 +46,6 @@ jobs:
           echo "=== _framework (first 10) ==="
           ls publish/wwwroot/_framework/ 2>/dev/null | head -10 || echo "(missing)"
 
-      - name: Patch base href for GitHub Pages sub-path
-        run: |
-          REPO="${{ github.event.repository.name }}"
-          sed -i "s|<base href=\"/\" />|<base href=\"/${REPO}/\" />|g" publish/wwwroot/index.html
-          echo "Patched base href to /${REPO}/"
-          grep 'base href' publish/wwwroot/index.html
-
       - name: Create dashboard route
         run: |
           mkdir -p publish/wwwroot/dashboard
