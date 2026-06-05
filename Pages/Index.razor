@@ -620,7 +620,15 @@
             _dbg = "4:calling jsonp…";
             await InvokeAsync(StateHasChanged);
             var data = await JS.InvokeAsync<JsonElement>("searchItunesJsonp", _searchQuery);
-            _dbg = $"5:kind={data.ValueKind} len={(data.ValueKind == JsonValueKind.Array ? data.GetArrayLength() : -1)}";
+            var arrLen = data.ValueKind == JsonValueKind.Array ? data.GetArrayLength() : -1;
+            _dbg = $"5:len={arrLen}";
+            if (arrLen > 0)
+            {
+                var first = data.EnumerateArray().First();
+                var props = string.Join(",", first.EnumerateObject().Select(p => p.Name).Take(8));
+                _dbg += $" | props:{props}";
+            }
+            await InvokeAsync(StateHasChanged);
             if (data.ValueKind == JsonValueKind.Array)
             {
                 _searchResults = data.EnumerateArray()
