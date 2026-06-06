@@ -6,17 +6,25 @@ namespace INV.Services;
 
 public class MusicSearchService(HttpClient http)
 {
+    private const string ScriptUrl =
+        "https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec";
+
     public async Task<List<SongSearchResult>> SearchAsync(string query)
     {
+        if (string.IsNullOrWhiteSpace(query)) return [];
+
         try
         {
-            var url = $"https://itunes.apple.com/search?term={Uri.EscapeDataString(query)}&media=music&entity=song&limit=6&country=us";
+            var url  = $"{ScriptUrl}?action=musicSearch&q={Uri.EscapeDataString(query)}";
             var json = await http.GetStringAsync(url);
-            var response = JsonSerializer.Deserialize<ItunesResponse>(json);
-            return response?.Results
+            var resp = JsonSerializer.Deserialize<MusicSearchResponse>(json);
+
+            if (resp is not { Success: true }) return [];
+
+            return resp.Results
                 .Where(r => !string.IsNullOrEmpty(r.TrackName))
                 .Select(r => new SongSearchResult(r.TrackName!, r.ArtistName ?? "", r.ArtworkUrl100))
-                .ToList() ?? [];
+                .ToList();
         }
         catch
         {
@@ -25,10 +33,11 @@ public class MusicSearchService(HttpClient http)
     }
 }
 
-internal sealed class ItunesResponse
+internal sealed class MusicSearchResponse
 {
-    [JsonPropertyName("results")]
-    public List<ItunesTrack> Results { get; set; } = [];
+    [JsonPropertyName("success")] public bool              Success { get; set; }
+    [JsonPropertyName("results")] public List<ItunesTrack> Results { get; set; } = [];
+    [JsonPropertyName("message")] public string?           Message { get; set; }
 }
 
 internal sealed class ItunesTrack

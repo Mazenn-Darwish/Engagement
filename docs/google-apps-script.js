@@ -14,7 +14,7 @@
  *   Songs      — song suggestions
  *   Blessings  — comments / messages
  *   Guestbook  — drawn signatures (base64 PNG)
- *   Analytics  — one row per page visit (timestamp only)
+ *   Analytics  — one row per page visit
  */
 
 // ── Admin key — CHANGE THIS before deploying, then use it to log in to /dashboard ──
@@ -29,6 +29,8 @@ const SONG_HEADERS      = ['Timestamp', 'Guest Name', 'Song Title', 'Artist', 'W
 const BLESSING_HEADERS  = ['Timestamp', 'Guest Name', 'Message'];
 const GUESTBOOK_HEADERS = ['Timestamp', 'Guest Name', 'Signature (base64 PNG)'];
 const ANALYTICS_HEADERS = ['Timestamp', 'IP Address', 'City', 'Region', 'Country', 'ISP / Network', 'Device', 'OS', 'Model', 'Browser', 'Screen'];
+
+const MUSIC_CACHE_TTL = 600; // 10 minutes
 
 function doPost(e) {
     try {
@@ -83,33 +85,22 @@ function doPost(e) {
     }
 }
 
-// Authenticated data reader for the /dashboard page
 function doGet(e) {
     const key    = (e.parameter && e.parameter.key)    || '';
     const sheet  = (e.parameter && e.parameter.sheet)  || '';
     const action = (e.parameter && e.parameter.action) || '';
 
-    // Public music search proxy — no auth needed
-    if (action === 'search') {
-        const q = (e.parameter && e.parameter.q) || '';
-        if (!q) return jsonResponse({ error: 'No query' });
-        try {
-            const url = 'https://itunes.apple.com/search?term=' + encodeURIComponent(q) +
-                        '&media=music&entity=song&limit=6&country=us';
-            const resp = UrlFetchApp.fetch(url);
-            const data = JSON.parse(resp.getContentText());
-            return ContentService
-                .createTextOutput(JSON.stringify(data.results || []))
-                .setMimeType(ContentService.MimeType.JSON);
-        } catch(err) {
-            return ContentService.createTextOutput('[]').setMimeType(ContentService.MimeType.JSON);
-        }
+    // ── Music search — public, no auth, iTunes only ──────────────────────
+    if (action === 'musicSearch') {
+        return handleMusicSearch(e.parameter);
     }
 
+    // ── Liveness probe ────────────────────────────────────────────────────
     if (!key || !sheet) {
         return jsonResponse({ status: 'ok', message: 'Webhook is live.' });
     }
 
+    // ── Dashboard reads — admin key required ──────────────────────────────
     if (key !== ADMIN_KEY) {
         return jsonResponse({ error: 'Unauthorized' });
     }
@@ -140,6 +131,76 @@ function doGet(e) {
 
     return ContentService
         .createTextOutput(JSON.stringify(rows))
+        .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Fetches music results from iTunes Search API.
+ * Only performs music searches — not a generic proxy.
+ * Results are cached for MUSIC_CACHE_TTL seconds to reduce Apple API calls.
+ */
+function handleMusicSearch(params) {
+    const q = ((params && params.q) || '').trim();
+
+    if (!q) {
+        return musicResponse(false, [], 'Query is required.');
+    }
+    if (q.length > 200) {
+        return musicResponse(false, [], 'Query too long.');
+    }
+
+    const cacheKey = 'music_v1_' + q.toLowerCase();
+    const cache    = CacheService.getScriptCache();
+    const cached   = cache.get(cacheKey);
+
+    if (cached) {
+        return ContentService
+            .createTextOutput(cached)
+            .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    try {
+        const url = 'https://itunes.apple.com/search'
+                  + '?term='   + encodeURIComponent(q)
+                  + '&media=music'
+                  + '&entity=song'
+                  + '&limit=10'
+                  + '&country=us';
+
+        const resp    = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+        const code    = resp.getResponseCode();
+
+        if (code !== 200) {
+            return musicResponse(false, [], 'iTunes API returned status ' + code);
+        }
+
+        const body    = resp.getContentText('UTF-8');
+        const parsed  = JSON.parse(body);
+        const results = (parsed.results || []).map(function(t) {
+            return {
+                trackName:     t.trackName     || '',
+                artistName:    t.artistName    || '',
+                artworkUrl100: t.artworkUrl100 || ''
+            };
+        });
+
+        const payload = JSON.stringify({ success: true, results: results });
+        cache.put(cacheKey, payload, MUSIC_CACHE_TTL);
+
+        return ContentService
+            .createTextOutput(payload)
+            .setMimeType(ContentService.MimeType.JSON);
+
+    } catch (err) {
+        return musicResponse(false, [], 'Search failed.');
+    }
+}
+
+function musicResponse(success, results, message) {
+    const obj = { success: success, results: results || [] };
+    if (message) obj.message = message;
+    return ContentService
+        .createTextOutput(JSON.stringify(obj))
         .setMimeType(ContentService.MimeType.JSON);
 }
 
