@@ -1,6 +1,7 @@
 @page "/"
 @inject IJSRuntime JS
 @inject SongService SongService
+@inject MusicSearchService MusicSearch
 @inject CommentService CommentService
 @inject SignatureService SignatureService
 @implements IDisposable
@@ -612,12 +613,7 @@
             await Task.Delay(380, cts.Token);
             cts.Token.ThrowIfCancellationRequested();
 
-            var json = await JS.InvokeAsync<string>("searchSongs", _searchQuery);
-            var tracks = System.Text.Json.JsonSerializer.Deserialize<List<ItunesTrackResult>>(json) ?? [];
-            _searchResults = tracks
-                .Where(t => !string.IsNullOrEmpty(t.TrackName))
-                .Select(t => new SongSearchResult(t.TrackName!, t.ArtistName ?? "", t.ArtworkUrl100))
-                .ToList();
+            _searchResults = await MusicSearch.SearchAsync(_searchQuery);
         }
         catch (OperationCanceledException) { }
         catch { }
@@ -628,12 +624,6 @@
         }
     }
 
-    private sealed class ItunesTrackResult
-    {
-        [System.Text.Json.Serialization.JsonPropertyName("trackName")]     public string? TrackName     { get; set; }
-        [System.Text.Json.Serialization.JsonPropertyName("artistName")]    public string? ArtistName    { get; set; }
-        [System.Text.Json.Serialization.JsonPropertyName("artworkUrl100")] public string? ArtworkUrl100 { get; set; }
-    }
 
     private void SelectSong(SongSearchResult result)
     {

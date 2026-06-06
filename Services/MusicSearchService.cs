@@ -11,8 +11,6 @@ public class MusicSearchService(HttpClient http)
         try
         {
             var url = $"https://itunes.apple.com/search?term={Uri.EscapeDataString(query)}&media=music&entity=song&limit=6&country=us";
-            // Use GetStringAsync to avoid Content-Type check — iTunes returns
-            // text/javascript which causes GetFromJsonAsync to throw in .NET 7+
             var json = await http.GetStringAsync(url);
             var response = JsonSerializer.Deserialize<ItunesResponse>(json);
             return response?.Results
