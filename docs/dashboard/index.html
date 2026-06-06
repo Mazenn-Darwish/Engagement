@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mazen &amp; Doha · Engagement</title>
     <base href="/" />
-    <link href="_framework/dotnet.a0qput13j6.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-Fm4TdjOV0qCIiA23DPGVS3fprOdaS0exMNMJbspwsFI=" />
+    <link href="_framework/dotnet.cad0m7leyh.js" rel="preload" as="script" fetchpriority="high" crossorigin="anonymous" integrity="sha256-vJoHjpTVo2LB5//bqnTdoBAMfsZDY6j316FOIiyZ6UI=" />
 
     <!-- Open Graph / WhatsApp / social sharing -->
     <meta property="og:type"        content="website" />
@@ -28,7 +28,7 @@
     <script type="importmap">{
   "imports": {
     "./_framework/blazor.webassembly.js": "./_framework/blazor.webassembly.66stpp682q.js",
-    "./_framework/dotnet.js": "./_framework/dotnet.a0qput13j6.js",
+    "./_framework/dotnet.js": "./_framework/dotnet.cad0m7leyh.js",
     "./_framework/dotnet.native.js": "./_framework/dotnet.native.j9yxww2air.js",
     "./_framework/dotnet.runtime.js": "./_framework/dotnet.runtime.r2kbxkuujc.js"
   },
@@ -36,8 +36,8 @@
   "integrity": {
     "./_framework/blazor.webassembly.66stpp682q.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
     "./_framework/blazor.webassembly.js": "sha256-3lCWrko3zwspV40aQhs2S/IMkRSarnHRKIdkHhuXIBA=",
-    "./_framework/dotnet.a0qput13j6.js": "sha256-Fm4TdjOV0qCIiA23DPGVS3fprOdaS0exMNMJbspwsFI=",
-    "./_framework/dotnet.js": "sha256-Fm4TdjOV0qCIiA23DPGVS3fprOdaS0exMNMJbspwsFI=",
+    "./_framework/dotnet.cad0m7leyh.js": "sha256-vJoHjpTVo2LB5//bqnTdoBAMfsZDY6j316FOIiyZ6UI=",
+    "./_framework/dotnet.js": "sha256-vJoHjpTVo2LB5//bqnTdoBAMfsZDY6j316FOIiyZ6UI=",
     "./_framework/dotnet.native.j9yxww2air.js": "sha256-t2sLHIeFuKgbEH+wz5jXGlVRt+hMNlyCkCwLtVZUwws=",
     "./_framework/dotnet.native.js": "sha256-t2sLHIeFuKgbEH+wz5jXGlVRt+hMNlyCkCwLtVZUwws=",
     "./_framework/dotnet.runtime.js": "sha256-YyudibIWETMKrLb+nAZdJ+xDY7HY6BWf6s32UAdcvCU=",
@@ -241,8 +241,21 @@
             }
         }
 
+        // Music search — same fetch pattern as fetchSheetData, works on all browsers/UAs
+        var _scriptBase = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
+        async function searchMusic(query) {
+            try {
+                var r = await fetch(_scriptBase + '?action=musicSearch&q=' + encodeURIComponent(query),
+                                    { method: 'GET', mode: 'cors' });
+                if (!r.ok) return null;
+                return await r.text();
+            } catch(e) {
+                return null;
+            }
+        }
+
         // Native input listener for song search — bypasses Blazor @oninput on mobile
-function initSongSearchInput(dotnetRef) {
+        function initSongSearchInput(dotnetRef) {
             const input = document.getElementById('song-search-input');
             if (!input || input._songAttached) return;
             input._songAttached = true;

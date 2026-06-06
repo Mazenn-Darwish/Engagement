@@ -1,7 +1,6 @@
 @page "/"
 @inject IJSRuntime JS
 @inject SongService SongService
-@inject MusicSearchService MusicSearch
 @inject CommentService CommentService
 @inject SignatureService SignatureService
 @implements IDisposable
@@ -613,7 +612,16 @@
             await Task.Delay(380, cts.Token);
             cts.Token.ThrowIfCancellationRequested();
 
-            _searchResults = await MusicSearch.SearchAsync(_searchQuery);
+            var json = await JS.InvokeAsync<string?>("searchMusic", _searchQuery);
+            if (!string.IsNullOrEmpty(json))
+            {
+                var resp = System.Text.Json.JsonSerializer.Deserialize<MusicSearchResp>(json);
+                if (resp is { Success: true })
+                    _searchResults = resp.Results
+                        .Where(t => !string.IsNullOrEmpty(t.TrackName))
+                        .Select(t => new SongSearchResult(t.TrackName!, t.ArtistName ?? "", t.ArtworkUrl100))
+                        .ToList();
+            }
         }
         catch (OperationCanceledException) { }
         catch { }
@@ -706,5 +714,17 @@
         _searchCts.Cancel();
         _searchCts.Dispose();
         _dotnetRef?.Dispose();
+    }
+
+    private sealed class MusicSearchResp
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("success")] public bool Success { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("results")] public List<MusicTrack> Results { get; set; } = [];
+    }
+    private sealed class MusicTrack
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("trackName")]     public string? TrackName     { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("artistName")]    public string? ArtistName    { get; set; }
+        [System.Text.Json.Serialization.JsonPropertyName("artworkUrl100")] public string? ArtworkUrl100 { get; set; }
     }
 }
