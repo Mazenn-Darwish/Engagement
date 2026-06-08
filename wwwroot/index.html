@@ -223,17 +223,34 @@
             }
         }
 
-        // Music search — same fetch pattern as fetchSheetData, works on all browsers/UAs
+        // Music search — tries Apps Script proxy first (works on mobile), falls back to iTunes direct (works on desktop)
         var _scriptBase = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
         async function searchMusic(query) {
+            // 1. Try Apps Script proxy (server-side fetch bypasses Apple's mobile UA block)
             try {
                 var r = await fetch(_scriptBase + '?action=musicSearch&q=' + encodeURIComponent(query),
                                     { method: 'GET', mode: 'cors' });
-                if (!r.ok) return null;
-                return await r.text();
-            } catch(e) {
-                return null;
-            }
+                if (r.ok) {
+                    var text = await r.text();
+                    var json = JSON.parse(text);
+                    if (json && json.success === true) return text;
+                }
+            } catch(e) {}
+
+            // 2. Fall back to iTunes directly (works on desktop, blocked on mobile by Apple)
+            try {
+                var r2 = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(query)
+                                   + '&media=music&entity=song&limit=10&country=us',
+                                     { method: 'GET', mode: 'cors' });
+                if (r2.ok) {
+                    var data = await r2.json();
+                    return JSON.stringify({ success: true, results: (data.results || []).map(function(t) {
+                        return { trackName: t.trackName || '', artistName: t.artistName || '', artworkUrl100: t.artworkUrl100 || '' };
+                    })});
+                }
+            } catch(e) {}
+
+            return null;
         }
 
         // Native input listener for song search — bypasses Blazor @oninput on mobile
