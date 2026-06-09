@@ -258,6 +258,11 @@
                         </div>
                     </div>
 
+                    @if (!string.IsNullOrEmpty(_dbg))
+                    {
+                        <p style="font-size:0.7rem;color:#888;word-break:break-all;margin:0.2rem 0">dbg: @_dbg</p>
+                    }
+
                     @if (_searchResults.Count > 0)
                     {
                         <ul class="search-results" id="song-results">
@@ -465,6 +470,7 @@
     private CancellationTokenSource _searchCts = new();
     private bool _isSearching;
     private DotNetObjectReference<Index>? _dotnetRef;
+    private string _dbg = "";
 
     // ── Signature / guestbook modal ──────────────────────
     private bool _sigOpen;
@@ -596,6 +602,7 @@
         _song.SongTitle = "";
         _song.Artist    = "";
         _searchResults  = [];
+        _dbg            = $"1:input={value.Length}ch";
 
         _searchCts.Cancel();
         _searchCts = new CancellationTokenSource();
@@ -603,28 +610,41 @@
 
         await InvokeAsync(StateHasChanged);
 
-        if (_searchQuery.Length < 2) return;
+        if (_searchQuery.Length < 2) { _dbg = "short"; return; }
 
         try
         {
             _isSearching = true;
+            _dbg = "2:searching…";
             await InvokeAsync(StateHasChanged);
             await Task.Delay(380, cts.Token);
             cts.Token.ThrowIfCancellationRequested();
 
+            _dbg = "3:calling JS";
+            await InvokeAsync(StateHasChanged);
             var json = await JS.InvokeAsync<string?>("searchMusic", _searchQuery);
+            _dbg = json is null ? "4:JS=null" : $"4:JS={json.Length}ch";
+            await InvokeAsync(StateHasChanged);
+
             if (!string.IsNullOrEmpty(json))
             {
                 var resp = System.Text.Json.JsonSerializer.Deserialize<MusicSearchResp>(json);
                 if (resp is { Success: true })
+                {
                     _searchResults = resp.Results
                         .Where(t => !string.IsNullOrEmpty(t.TrackName))
                         .Select(t => new SongSearchResult(t.TrackName!, t.ArtistName ?? "", t.ArtworkUrl100))
                         .ToList();
+                    _dbg = $"5:results={_searchResults.Count}";
+                }
+                else
+                {
+                    _dbg = $"5:success=false raw={json[..Math.Min(60,json.Length)]}";
+                }
             }
         }
-        catch (OperationCanceledException) { }
-        catch { }
+        catch (OperationCanceledException) { _dbg = "cancelled"; }
+        catch (Exception ex) { _dbg = $"ERR:{ex.Message[..Math.Min(60,ex.Message.Length)]}"; }
         finally
         {
             _isSearching = false;

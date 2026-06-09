@@ -234,23 +234,29 @@
                 if (r.ok) {
                     var data = await r.json();
                     if (data && data.resultCount > 0) {
+                        console.log('[search] itunes direct ok, results=' + data.resultCount);
                         return JSON.stringify({ success: true, results: (data.results || []).map(function(t) {
                             return { trackName: t.trackName || '', artistName: t.artistName || '', artworkUrl100: t.artworkUrl100 || '' };
                         })});
                     }
+                    console.log('[search] itunes ok but resultCount=' + (data && data.resultCount));
                 }
-            } catch(e) {}
+            } catch(e) { console.log('[search] itunes threw: ' + e); }
 
             // 2. Fall back to Apps Script proxy (server-side fetch bypasses Apple's mobile UA block)
             try {
+                console.log('[search] trying proxy…');
                 var r2 = await fetch(_scriptBase + '?action=musicSearch&q=' + encodeURIComponent(query),
                                      { method: 'GET', mode: 'cors' });
+                console.log('[search] proxy status=' + r2.status);
                 if (r2.ok) {
                     var text = await r2.text();
+                    console.log('[search] proxy raw=' + text.slice(0, 120));
                     var json = JSON.parse(text);
                     if (json && json.success === true) return text;
+                    console.log('[search] proxy success=false');
                 }
-            } catch(e) {}
+            } catch(e) { console.log('[search] proxy threw: ' + e); }
 
             return null;
         }
