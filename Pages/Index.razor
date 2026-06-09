@@ -623,24 +623,20 @@
             _dbg = "3:calling JS";
             await InvokeAsync(StateHasChanged);
             var json = await JS.InvokeAsync<string?>("searchMusic", _searchQuery);
-            _dbg = json is null ? "4:JS=null" : $"4:JS={json.Length}ch";
+            if (string.IsNullOrEmpty(json)) { _dbg = "4:JS=null"; return; }
+
+            var resp = System.Text.Json.JsonSerializer.Deserialize<MusicSearchResp>(json);
+            _dbg = resp is { Success: true }
+                ? $"ok:{resp.Results.Count}results"
+                : $"fail:{(resp?.JsDbg ?? json[..Math.Min(80,json.Length)])}";
             await InvokeAsync(StateHasChanged);
 
-            if (!string.IsNullOrEmpty(json))
+            if (resp is { Success: true })
             {
-                var resp = System.Text.Json.JsonSerializer.Deserialize<MusicSearchResp>(json);
-                if (resp is { Success: true })
-                {
-                    _searchResults = resp.Results
-                        .Where(t => !string.IsNullOrEmpty(t.TrackName))
-                        .Select(t => new SongSearchResult(t.TrackName!, t.ArtistName ?? "", t.ArtworkUrl100))
-                        .ToList();
-                    _dbg = $"5:results={_searchResults.Count}";
-                }
-                else
-                {
-                    _dbg = $"5:success=false raw={json[..Math.Min(60,json.Length)]}";
-                }
+                _searchResults = resp.Results
+                    .Where(t => !string.IsNullOrEmpty(t.TrackName))
+                    .Select(t => new SongSearchResult(t.TrackName!, t.ArtistName ?? "", t.ArtworkUrl100))
+                    .ToList();
             }
         }
         catch (OperationCanceledException) { _dbg = "cancelled"; }
@@ -740,6 +736,7 @@
     {
         [System.Text.Json.Serialization.JsonPropertyName("success")] public bool Success { get; set; }
         [System.Text.Json.Serialization.JsonPropertyName("results")] public List<MusicTrack> Results { get; set; } = [];
+        [System.Text.Json.Serialization.JsonPropertyName("_dbg")]    public string? JsDbg   { get; set; }
     }
     private sealed class MusicTrack
     {

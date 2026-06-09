@@ -226,39 +226,42 @@
         // Music search — tries iTunes directly first (fast on desktop), falls back to Apps Script proxy (needed on mobile)
         var _scriptBase = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
         async function searchMusic(query) {
+            var d = [];
+
             // 1. Try iTunes directly (fast; blocked on mobile by Apple's UA check)
             try {
+                d.push('A');
                 var r = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(query)
                                   + '&media=music&entity=song&limit=10&country=us',
                                     { method: 'GET', mode: 'cors' });
+                d.push('B' + r.status);
                 if (r.ok) {
                     var data = await r.json();
+                    d.push('C' + data.resultCount);
                     if (data && data.resultCount > 0) {
-                        console.log('[search] itunes direct ok, results=' + data.resultCount);
                         return JSON.stringify({ success: true, results: (data.results || []).map(function(t) {
                             return { trackName: t.trackName || '', artistName: t.artistName || '', artworkUrl100: t.artworkUrl100 || '' };
                         })});
                     }
-                    console.log('[search] itunes ok but resultCount=' + (data && data.resultCount));
                 }
-            } catch(e) { console.log('[search] itunes threw: ' + e); }
+            } catch(e) { d.push('Aerr:' + String(e).slice(0,30)); }
 
             // 2. Fall back to Apps Script proxy (server-side fetch bypasses Apple's mobile UA block)
             try {
-                console.log('[search] trying proxy…');
+                d.push('P');
                 var r2 = await fetch(_scriptBase + '?action=musicSearch&q=' + encodeURIComponent(query),
                                      { method: 'GET', mode: 'cors' });
-                console.log('[search] proxy status=' + r2.status);
+                d.push('Q' + r2.status);
                 if (r2.ok) {
                     var text = await r2.text();
-                    console.log('[search] proxy raw=' + text.slice(0, 120));
+                    d.push('R' + text.length);
                     var json = JSON.parse(text);
+                    d.push('S' + json.success);
                     if (json && json.success === true) return text;
-                    console.log('[search] proxy success=false');
                 }
-            } catch(e) { console.log('[search] proxy threw: ' + e); }
+            } catch(e) { d.push('Perr:' + String(e).slice(0,30)); }
 
-            return null;
+            return JSON.stringify({ success: false, results: [], _dbg: d.join('|') });
         }
 
         // Native input listener for song search — bypasses Blazor @oninput on mobile
