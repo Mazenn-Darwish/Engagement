@@ -167,7 +167,11 @@ function handleMusicSearch(params) {
                   + '&limit=10'
                   + '&country=us';
 
-        const resp    = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+        const resp    = UrlFetchApp.fetch(url, {
+            muteHttpExceptions: true,
+            followRedirects:    true,
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; EngagementSite/1.0)' }
+        });
         const code    = resp.getResponseCode();
 
         if (code !== 200) {
@@ -192,8 +196,21 @@ function handleMusicSearch(params) {
             .setMimeType(ContentService.MimeType.JSON);
 
     } catch (err) {
-        return musicResponse(false, [], 'Search failed.');
+        // Surface the real error so we can diagnose (e.g. missing authorization scope).
+        return musicResponse(false, [], 'EXC ' + (err && err.name) + ': ' + (err && err.message));
     }
+}
+
+/**
+ * Run this ONCE from the Apps Script editor (pick testMusicSearch in the
+ * function dropdown, click Run). It forces the authorization prompt for the
+ * "Connect to an external service" scope that UrlFetchApp requires.
+ * Grant permission when asked, then redeploy. Check the execution log output.
+ */
+function testMusicSearch() {
+    const out = handleMusicSearch({ q: 'drake' }).getContent();
+    Logger.log(out);
+    return out;
 }
 
 function musicResponse(success, results, message) {
