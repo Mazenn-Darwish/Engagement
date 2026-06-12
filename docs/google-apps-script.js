@@ -202,10 +202,19 @@ function handleMusicSearch(params) {
 }
 
 /**
- * Run this ONCE from the Apps Script editor (pick testMusicSearch in the
- * function dropdown, click Run). It forces the authorization prompt for the
- * "Connect to an external service" scope that UrlFetchApp requires.
- * Grant permission when asked, then redeploy. Check the execution log output.
+ * Run this ONCE from the Apps Script editor (pick "authorize" in the function
+ * dropdown, click Run). It calls UrlFetchApp WITHOUT a try/catch on purpose, so
+ * the missing-permission error reaches the top level and Apps Script finally
+ * shows the "Authorize access" popup. Click Review permissions → Allow.
+ * After you grant it, music search works immediately (no redeploy needed).
+ */
+function authorize() {
+    const resp = UrlFetchApp.fetch('https://itunes.apple.com/search?term=drake&limit=1');
+    Logger.log('OK, status ' + resp.getResponseCode());
+}
+
+/**
+ * Optional: run after authorize() to confirm the proxy returns songs.
  */
 function testMusicSearch() {
     const out = handleMusicSearch({ q: 'drake' }).getContent();
