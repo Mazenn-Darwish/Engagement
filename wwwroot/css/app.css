@@ -769,6 +769,96 @@ html, body {
     flex-shrink: 0;
 }
 
+/* ─── RSVP attendance cards ──────────────────────────────── */
+.attend-choice {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+    margin-bottom: 0.4rem;
+}
+
+.attend-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 1rem 0.6rem;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    color: var(--green-md);
+    transition: border-color 0.2s, background 0.2s, transform 0.12s, box-shadow 0.2s;
+}
+
+.attend-card:hover { transform: translateY(-1px); }
+
+.attend-card.is-selected {
+    background: var(--green-dk);
+    border-color: var(--green-dk);
+    color: var(--bg);
+    box-shadow: 0 6px 18px rgba(45, 90, 39, 0.28);
+}
+
+.attend-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--green-md);
+    transition: color 0.2s;
+}
+
+.attend-card.is-selected .attend-icon { color: var(--green-pale); }
+
+.attend-label {
+    font-family: var(--font-display);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.attend-sub {
+    font-size: 0.78rem;
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* ─── Guest count stepper ────────────────────────────────── */
+.guest-stepper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-top: 0.3rem;
+}
+
+.step-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.35);
+    color: var(--green-dk);
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s, border-color 0.18s, opacity 0.18s;
+}
+
+.step-btn:hover:not(:disabled) { background: var(--green-pale); border-color: var(--green-dk); }
+.step-btn:disabled { opacity: 0.35; cursor: default; }
+
+.step-count {
+    min-width: 2ch;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--green-dk);
+}
+
 /* ─── Validation messages ────────────────────────────────── */
 .validation-message {
     color: var(--red-err);

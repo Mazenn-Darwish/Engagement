@@ -26,7 +26,7 @@ const BLESSING_SHEET  = 'Blessings';
 const GUESTBOOK_SHEET = 'Guestbook';
 const ANALYTICS_SHEET = 'Analytics';
 
-const RSVP_HEADERS      = ['Timestamp', 'Full Name', 'Email', 'Attending', 'Guest Count', 'Note'];
+const RSVP_HEADERS      = ['Timestamp', 'Full Name', 'Attending', 'Guest Count', 'Note'];
 const SONG_HEADERS      = ['Timestamp', 'Guest Name', 'Song Title', 'Artist', 'Why This Song'];
 const BLESSING_HEADERS  = ['Timestamp', 'Guest Name', 'Message'];
 const GUESTBOOK_HEADERS = ['Timestamp', 'Guest Name', 'Signature (base64 PNG)'];
@@ -43,7 +43,6 @@ function doPost(e) {
             sheet.appendRow([
                 new Date().toLocaleString(),
                 data.fullName   || '',
-                data.email      || '',
                 data.attending  || '',
                 data.guestCount || 0,
                 data.note       || ''

@@ -15,7 +15,6 @@ public class RsvpService(IJSRuntime js)
             {
                 type       = "rsvp",
                 fullName   = model.FullName,
-                email      = model.Email,
                 attending  = model.Attending,
                 guestCount = model.Attending == "yes" ? model.GuestCount : 0,
                 note       = model.Note ?? ""

@@ -251,37 +251,38 @@
                 <EditForm Model="_rsvp" OnValidSubmit="HandleRsvpSubmit">
                     <DataAnnotationsValidator />
 
+                    <div class="attend-choice">
+                        <button type="button"
+                                class="attend-card @(_rsvp.Attending == "yes" ? "is-selected" : "")"
+                                @onclick="@(() => { _rsvp.Attending = "yes"; })">
+                            <span class="attend-icon">✦</span>
+                            <span class="attend-label">Joyfully Accepts</span>
+                            <span class="attend-sub">I'll be there</span>
+                        </button>
+                        <button type="button"
+                                class="attend-card @(_rsvp.Attending == "no" ? "is-selected" : "")"
+                                @onclick="@(() => { _rsvp.Attending = "no"; })">
+                            <span class="attend-icon">♡</span>
+                            <span class="attend-label">Regretfully Declines</span>
+                            <span class="attend-sub">Can't make it</span>
+                        </button>
+                    </div>
+
                     <div class="form-field">
                         <label>Full Name</label>
                         <InputText @bind-Value="_rsvp.FullName" placeholder="Your full name" />
                         <ValidationMessage For="@(() => _rsvp.FullName)" />
                     </div>
 
-                    <div class="form-field">
-                        <label>Email</label>
-                        <InputText @bind-Value="_rsvp.Email" placeholder="your@email.com" type="email" />
-                        <ValidationMessage For="@(() => _rsvp.Email)" />
-                    </div>
-
-                    <div class="form-field">
-                        <label>Attendance</label>
-                        <InputRadioGroup @bind-Value="_rsvp.Attending" class="radio-group">
-                            <label class="radio-label">
-                                <InputRadio Value="@("yes")" /> Joyfully accepts
-                            </label>
-                            <label class="radio-label">
-                                <InputRadio Value="@("no")" /> Regretfully declines
-                            </label>
-                        </InputRadioGroup>
-                        <ValidationMessage For="@(() => _rsvp.Attending)" />
-                    </div>
-
                     @if (_rsvp.Attending == "yes")
                     {
                         <div class="form-field">
                             <label>Number of Guests</label>
-                            <InputNumber @bind-Value="_rsvp.GuestCount" min="1" max="10" />
-                            <ValidationMessage For="@(() => _rsvp.GuestCount)" />
+                            <div class="guest-stepper">
+                                <button type="button" class="step-btn" @onclick="DecGuests" disabled="@(_rsvp.GuestCount <= 1)">−</button>
+                                <span class="step-count">@_rsvp.GuestCount</span>
+                                <button type="button" class="step-btn" @onclick="IncGuests" disabled="@(_rsvp.GuestCount >= 10)">+</button>
+                            </div>
                         </div>
                     }
 
@@ -676,6 +677,9 @@
     }
 
     private void CloseRsvpModal() => _rsvpOpen = false;
+
+    private void IncGuests() { if (_rsvp.GuestCount < 10) _rsvp.GuestCount++; }
+    private void DecGuests() { if (_rsvp.GuestCount > 1)  _rsvp.GuestCount--; }
 
     private async Task HandleRsvpSubmit()
     {
