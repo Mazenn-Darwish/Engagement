@@ -1,5 +1,6 @@
 @page "/"
 @inject IJSRuntime JS
+@inject RsvpService RsvpService
 @inject SongService SongService
 @inject CommentService CommentService
 @inject SignatureService SignatureService
@@ -212,13 +213,97 @@
         <button class="calendar-btn" @onclick="DownloadCalendar">+ Add to Calendar</button>
 
         <div class="action-row">
-            <button class="rsvp-btn" @onclick="OpenSongModal">♪ &nbsp; Suggest a Song</button>
+            <button class="rsvp-btn" @onclick="OpenRsvpModal">✦ &nbsp; RSVP</button>
+            <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenSongModal">♪ &nbsp; Suggest a Song</button>
             <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenCommentModal">✦ &nbsp; Leave us a comment!</button>
             <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenSigModal">✒ &nbsp; Sign the Guestbook</button>
         </div>
 
     </div>
 </main>
+
+@if (_rsvpOpen)
+{
+    <div class="modal-overlay" @onclick="CloseRsvpModal">
+        <div class="modal-box" @onclick:stopPropagation="true">
+
+            @if (_rsvpSubmitted)
+            {
+                <div class="thank-you">
+                    <p class="ty-ornament">✦</p>
+                    <h2>Thank you, @_rsvp.FullName!</h2>
+                    @if (_rsvp.Attending == "yes")
+                    {
+                        <p>We can't wait to celebrate with you ✦</p>
+                    }
+                    else
+                    {
+                        <p>You'll be missed — thank you for letting us know.</p>
+                    }
+                    <button class="rsvp-btn" @onclick="CloseRsvpModal" style="margin-top:1.8rem">Close</button>
+                </div>
+            }
+            else
+            {
+                <h2 class="modal-title">✦ &nbsp; RSVP</h2>
+                <p class="modal-subtitle">Kindly let us know if you'll be joining us</p>
+
+                <EditForm Model="_rsvp" OnValidSubmit="HandleRsvpSubmit">
+                    <DataAnnotationsValidator />
+
+                    <div class="form-field">
+                        <label>Full Name</label>
+                        <InputText @bind-Value="_rsvp.FullName" placeholder="Your full name" />
+                        <ValidationMessage For="@(() => _rsvp.FullName)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Email</label>
+                        <InputText @bind-Value="_rsvp.Email" placeholder="your@email.com" type="email" />
+                        <ValidationMessage For="@(() => _rsvp.Email)" />
+                    </div>
+
+                    <div class="form-field">
+                        <label>Attendance</label>
+                        <InputRadioGroup @bind-Value="_rsvp.Attending" class="radio-group">
+                            <label class="radio-label">
+                                <InputRadio Value="@("yes")" /> Joyfully accepts
+                            </label>
+                            <label class="radio-label">
+                                <InputRadio Value="@("no")" /> Regretfully declines
+                            </label>
+                        </InputRadioGroup>
+                        <ValidationMessage For="@(() => _rsvp.Attending)" />
+                    </div>
+
+                    @if (_rsvp.Attending == "yes")
+                    {
+                        <div class="form-field">
+                            <label>Number of Guests</label>
+                            <InputNumber @bind-Value="_rsvp.GuestCount" min="1" max="10" />
+                            <ValidationMessage For="@(() => _rsvp.GuestCount)" />
+                        </div>
+                    }
+
+                    <div class="form-field">
+                        <label>Note <span class="optional">(optional)</span></label>
+                        <InputTextArea @bind-Value="_rsvp.Note" placeholder="Any message or dietary requirements…" rows="2" />
+                    </div>
+
+                    @if (_rsvpError)
+                    {
+                        <p class="submit-error">Something went wrong. Please try again.</p>
+                    }
+
+                    <button type="submit" class="rsvp-btn submit-btn" disabled="@_rsvpSubmitting">
+                        @(_rsvpSubmitting ? "Sending…" : "Send RSVP")
+                    </button>
+                </EditForm>
+            }
+
+        </div>
+    </div>
+}
 
 @if (_songOpen)
 {
@@ -257,11 +342,6 @@
                             @if (_isSearching) { <span class="search-spinner">⟳</span> }
                         </div>
                     </div>
-
-                    @if (!string.IsNullOrEmpty(_dbg))
-                    {
-                        <p style="font-size:0.7rem;color:#888;word-break:break-all;margin:0.2rem 0">dbg: @_dbg</p>
-                    }
 
                     @if (_searchResults.Count > 0)
                     {
@@ -457,6 +537,13 @@
         StateHasChanged();
     }
 
+    // ── RSVP modal ────────────────────────────────────────
+    private bool _rsvpOpen;
+    private bool _rsvpSubmitted;
+    private bool _rsvpSubmitting;
+    private bool _rsvpError;
+    private RsvpModel _rsvp = new();
+
     // ── Song modal ────────────────────────────────────────
     private bool _songOpen;
     private bool _songSubmitted;
@@ -470,7 +557,6 @@
     private CancellationTokenSource _searchCts = new();
     private bool _isSearching;
     private DotNetObjectReference<Index>? _dotnetRef;
-    private string _dbg = "";
 
     // ── Signature / guestbook modal ──────────────────────
     private bool _sigOpen;
@@ -581,6 +667,26 @@
         }
     }
 
+    private void OpenRsvpModal()
+    {
+        _rsvp          = new RsvpModel();
+        _rsvpSubmitted = false;
+        _rsvpError     = false;
+        _rsvpOpen      = true;
+    }
+
+    private void CloseRsvpModal() => _rsvpOpen = false;
+
+    private async Task HandleRsvpSubmit()
+    {
+        _rsvpSubmitting = true;
+        _rsvpError      = false;
+        var success = await RsvpService.SubmitAsync(_rsvp);
+        _rsvpSubmitting = false;
+        if (success) _rsvpSubmitted = true;
+        else         _rsvpError     = true;
+    }
+
     private void OpenSongModal()
     {
         _song           = new SongModel();
@@ -602,7 +708,6 @@
         _song.SongTitle = "";
         _song.Artist    = "";
         _searchResults  = [];
-        _dbg            = $"1:input={value.Length}ch";
 
         _searchCts.Cancel();
         _searchCts = new CancellationTokenSource();
@@ -610,27 +715,19 @@
 
         await InvokeAsync(StateHasChanged);
 
-        if (_searchQuery.Length < 2) { _dbg = "short"; return; }
+        if (_searchQuery.Length < 2) return;
 
         try
         {
             _isSearching = true;
-            _dbg = "2:searching…";
             await InvokeAsync(StateHasChanged);
-            await Task.Delay(380, cts.Token);
+            await Task.Delay(250, cts.Token);
             cts.Token.ThrowIfCancellationRequested();
 
-            _dbg = "3:calling JS";
-            await InvokeAsync(StateHasChanged);
             var json = await JS.InvokeAsync<string?>("searchMusic", _searchQuery);
-            if (string.IsNullOrEmpty(json)) { _dbg = "4:JS=null"; return; }
+            if (string.IsNullOrEmpty(json)) return;
 
             var resp = System.Text.Json.JsonSerializer.Deserialize<MusicSearchResp>(json);
-            _dbg = resp is { Success: true }
-                ? $"ok:{resp.Results.Count}results"
-                : $"fail:{(resp?.JsDbg ?? json[..Math.Min(80,json.Length)])}";
-            await InvokeAsync(StateHasChanged);
-
             if (resp is { Success: true })
             {
                 _searchResults = resp.Results
@@ -639,8 +736,8 @@
                     .ToList();
             }
         }
-        catch (OperationCanceledException) { _dbg = "cancelled"; }
-        catch (Exception ex) { _dbg = $"ERR:{ex.Message[..Math.Min(60,ex.Message.Length)]}"; }
+        catch (OperationCanceledException) { }
+        catch { }
         finally
         {
             _isSearching = false;
@@ -736,7 +833,6 @@
     {
         [System.Text.Json.Serialization.JsonPropertyName("success")] public bool Success { get; set; }
         [System.Text.Json.Serialization.JsonPropertyName("results")] public List<MusicTrack> Results { get; set; } = [];
-        [System.Text.Json.Serialization.JsonPropertyName("_dbg")]    public string? JsDbg   { get; set; }
     }
     private sealed class MusicTrack
     {

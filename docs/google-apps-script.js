@@ -20,11 +20,13 @@
 // ── Admin key — CHANGE THIS before deploying, then use it to log in to /dashboard ──
 const ADMIN_KEY = 'mazendohamamdouh@2A';
 
+const RSVP_SHEET      = 'RSVPs';
 const SONG_SHEET      = 'Songs';
 const BLESSING_SHEET  = 'Blessings';
 const GUESTBOOK_SHEET = 'Guestbook';
 const ANALYTICS_SHEET = 'Analytics';
 
+const RSVP_HEADERS      = ['Timestamp', 'Full Name', 'Email', 'Attending', 'Guest Count', 'Note'];
 const SONG_HEADERS      = ['Timestamp', 'Guest Name', 'Song Title', 'Artist', 'Why This Song'];
 const BLESSING_HEADERS  = ['Timestamp', 'Guest Name', 'Message'];
 const GUESTBOOK_HEADERS = ['Timestamp', 'Guest Name', 'Signature (base64 PNG)'];
@@ -35,6 +37,19 @@ const MUSIC_CACHE_TTL = 600; // 10 minutes
 function doPost(e) {
     try {
         const data = JSON.parse(e.postData.contents);
+
+        if (data.type === 'rsvp') {
+            const sheet = getOrCreateNamedSheet(RSVP_SHEET, RSVP_HEADERS);
+            sheet.appendRow([
+                new Date().toLocaleString(),
+                data.fullName   || '',
+                data.email      || '',
+                data.attending  || '',
+                data.guestCount || 0,
+                data.note       || ''
+            ]);
+            return jsonResponse({ success: true, type: 'rsvp' });
+        }
 
         if (data.type === 'song') {
             const sheet = getOrCreateNamedSheet(SONG_SHEET, SONG_HEADERS);
@@ -107,6 +122,7 @@ function doGet(e) {
 
     const sheetMap = {
         analytics: ANALYTICS_SHEET,
+        rsvps:     RSVP_SHEET,
         songs:     SONG_SHEET,
         blessings: BLESSING_SHEET,
         guestbook: GUESTBOOK_SHEET

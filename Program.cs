@@ -8,6 +8,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddScoped<RsvpService>();
 builder.Services.AddScoped<SongService>();
 builder.Services.AddScoped<MusicSearchService>(_ => new MusicSearchService(new HttpClient()));
 builder.Services.AddScoped<CommentService>();

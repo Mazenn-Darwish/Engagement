@@ -1,12 +1,11 @@
-using System.Net.Http.Json;
+using Microsoft.JSInterop;
 using INV.Models;
 
 namespace INV.Services;
 
-public class RsvpService(HttpClient http)
+public class RsvpService(IJSRuntime js)
 {
-    // TODO: Replace with your deployed Google Apps Script Web App URL
-    private const string WebhookUrl = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
+    private const string WebhookUrl = "https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec";
 
     public async Task<bool> SubmitAsync(RsvpModel model)
     {
@@ -14,15 +13,14 @@ public class RsvpService(HttpClient http)
         {
             var payload = new
             {
-                fullName = model.FullName,
-                email    = model.Email,
+                type       = "rsvp",
+                fullName   = model.FullName,
+                email      = model.Email,
                 attending  = model.Attending,
                 guestCount = model.Attending == "yes" ? model.GuestCount : 0,
-                note = model.Note ?? ""
+                note       = model.Note ?? ""
             };
-
-            var response = await http.PostAsJsonAsync(WebhookUrl, payload);
-            return response.IsSuccessStatusCode;
+            return await js.InvokeAsync<bool>("postToSheet", WebhookUrl, payload);
         }
         catch
         {

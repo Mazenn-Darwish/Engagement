@@ -223,45 +223,47 @@
             }
         }
 
-        // Music search — tries iTunes directly first (fast on desktop), falls back to Apps Script proxy (needed on mobile)
+        // Music search — runs iTunes-direct and the Apps Script proxy in parallel and
+        // returns whichever yields results first. Desktop: iTunes wins (fast). Mobile:
+        // Apple blocks the mobile UA so iTunes fails and the proxy answer is used.
         var _scriptBase = 'https://script.google.com/macros/s/AKfycbxdztj6hVbv5g6jI9exXrESUBTGmNE4yy8hbEFYJOv7NfQHsodKPLlhDCMc7S7jw7RT/exec';
-        async function searchMusic(query) {
-            var d = [];
 
-            // 1. Try iTunes directly (fast; blocked on mobile by Apple's UA check)
-            try {
-                d.push('A');
-                var r = await fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(query)
-                                  + '&media=music&entity=song&limit=10&country=us',
-                                    { method: 'GET', mode: 'cors' });
-                d.push('B' + r.status);
-                if (r.ok) {
-                    var data = await r.json();
-                    d.push('C' + data.resultCount);
-                    if (data && data.resultCount > 0) {
-                        return JSON.stringify({ success: true, results: (data.results || []).map(function(t) {
-                            return { trackName: t.trackName || '', artistName: t.artistName || '', artworkUrl100: t.artworkUrl100 || '' };
-                        })});
-                    }
-                }
-            } catch(e) { d.push('Aerr:' + String(e).slice(0,30)); }
+        function _itunesDirect(query) {
+            return fetch('https://itunes.apple.com/search?term=' + encodeURIComponent(query)
+                       + '&media=music&entity=song&limit=10&country=us', { method: 'GET', mode: 'cors' })
+                .then(function(r) { return r.ok ? r.json() : null; })
+                .then(function(data) {
+                    if (!data || !data.resultCount) return null;
+                    return JSON.stringify({ success: true, results: (data.results || []).map(function(t) {
+                        return { trackName: t.trackName || '', artistName: t.artistName || '', artworkUrl100: t.artworkUrl100 || '' };
+                    })});
+                })
+                .catch(function() { return null; });
+        }
 
-            // 2. Fall back to Apps Script proxy (server-side fetch bypasses Apple's mobile UA block)
-            try {
-                d.push('P');
-                var r2 = await fetch(_scriptBase + '?action=musicSearch&q=' + encodeURIComponent(query),
-                                     { method: 'GET', mode: 'cors' });
-                d.push('Q' + r2.status);
-                if (r2.ok) {
-                    var text = await r2.text();
-                    d.push('R' + text.length);
+        function _itunesProxy(query) {
+            return fetch(_scriptBase + '?action=musicSearch&q=' + encodeURIComponent(query), { method: 'GET', mode: 'cors' })
+                .then(function(r) { return r.ok ? r.text() : null; })
+                .then(function(text) {
+                    if (!text) return null;
                     var json = JSON.parse(text);
-                    d.push('S' + json.success);
-                    if (json && json.success === true) return text;
-                }
-            } catch(e) { d.push('Perr:' + String(e).slice(0,30)); }
+                    return (json && json.success === true && json.results && json.results.length) ? text : null;
+                })
+                .catch(function() { return null; });
+        }
 
-            return JSON.stringify({ success: false, results: [], _dbg: d.join('|') });
+        // Resolve as soon as either source returns a non-null result; null only if both fail.
+        function searchMusic(query) {
+            return new Promise(function(resolve) {
+                var sources = [_itunesDirect(query), _itunesProxy(query)];
+                var remaining = sources.length;
+                sources.forEach(function(p) {
+                    p.then(function(v) {
+                        if (v) resolve(v);
+                        else if (--remaining === 0) resolve(null);
+                    });
+                });
+            });
         }
 
         // Native input listener for song search — bypasses Blazor @oninput on mobile
