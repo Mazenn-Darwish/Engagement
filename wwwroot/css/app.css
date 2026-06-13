@@ -803,17 +803,53 @@ html, body {
 }
 
 .rsvp-panel {
+    position: relative;
     width: min(440px, 92vw);
-    background: rgba(255, 255, 255, 0.34);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.28));
     border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: clamp(1.4rem, 4vw, 2rem) clamp(1.2rem, 4vw, 1.8rem);
-    box-shadow: 0 10px 30px rgba(45, 90, 39, 0.1);
+    border-radius: 14px;
+    padding: clamp(1.7rem, 5vw, 2.4rem) clamp(1.3rem, 5vw, 2rem);
+    box-shadow: 0 14px 38px rgba(45, 90, 39, 0.12);
     text-align: center;
 }
 
-.rsvp-panel .modal-title { margin-bottom: 0.2rem; }
+/* Inset double-frame line for an engraved-invitation feel */
+.rsvp-panel::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border: 1px solid rgba(45, 90, 39, 0.2);
+    border-radius: 9px;
+    pointer-events: none;
+}
+
+.rsvp-crest {
+    font-size: 1.4rem;
+    letter-spacing: 0.5em;
+    color: var(--green-md);
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+.rsvp-panel .modal-title { margin-bottom: 0.25rem; }
 .rsvp-panel .form-field { text-align: left; }
+
+/* Softer filled inputs that read as a card form rather than bare underlines */
+.rsvp-panel .form-field input,
+.rsvp-panel .form-field textarea {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.6rem 0.8rem;
+}
+
+.rsvp-panel .form-field input:focus,
+.rsvp-panel .form-field textarea:focus {
+    border-color: var(--green-dk);
+    box-shadow: 0 0 0 3px rgba(45, 90, 39, 0.1);
+}
+
+.rsvp-panel .submit-btn { margin-top: 0.4rem; }
 
 /* ─── RSVP attendance cards ──────────────────────────────── */
 .attend-choice {
