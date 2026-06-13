@@ -773,90 +773,103 @@ html, body {
 .attend-choice {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.7rem;
-    margin-bottom: 0.4rem;
+    gap: 0.75rem;
+    margin: 0.4rem 0 1.4rem;
 }
 
 .attend-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem;
-    padding: 1rem 0.6rem;
-    background: rgba(255, 255, 255, 0.35);
+    justify-content: center;
+    gap: 0.7rem;
+    padding: 1.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.4);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     cursor: pointer;
     font-family: var(--font-body);
-    color: var(--green-md);
+    color: var(--green-dk);
+    text-align: center;
     transition: border-color 0.2s, background 0.2s, transform 0.12s, box-shadow 0.2s;
 }
 
-.attend-card:hover { transform: translateY(-1px); }
+.attend-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(45, 90, 39, 0.12); }
 
 .attend-card.is-selected {
     background: var(--green-dk);
     border-color: var(--green-dk);
     color: var(--bg);
-    box-shadow: 0 6px 18px rgba(45, 90, 39, 0.28);
+    box-shadow: 0 8px 22px rgba(45, 90, 39, 0.3);
 }
 
+/* Icon sits in a soft circular badge */
 .attend-icon {
-    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--green-pale);
+    color: var(--green-dk);
+    font-size: 1.35rem;
     line-height: 1;
-    color: var(--green-md);
-    transition: color 0.2s;
+    transition: background 0.2s, color 0.2s;
 }
 
-.attend-card.is-selected .attend-icon { color: var(--green-pale); }
+.attend-card.is-selected .attend-icon {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+}
 
 .attend-label {
     font-family: var(--font-display);
-    font-size: 0.74rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-align: center;
-}
-
-.attend-sub {
-    font-size: 0.78rem;
-    font-style: italic;
-    opacity: 0.7;
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
 }
 
 /* ─── Guest count stepper ────────────────────────────────── */
 .guest-stepper {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding-top: 0.3rem;
+    gap: 0.85rem;
+    padding-top: 0.5rem;
 }
 
 .step-btn {
-    width: 38px;
-    height: 38px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.4);
     color: var(--green-dk);
-    font-size: 1.25rem;
+    font-size: 1.4rem;
     line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     transition: background 0.18s, border-color 0.18s, opacity 0.18s;
 }
 
 .step-btn:hover:not(:disabled) { background: var(--green-pale); border-color: var(--green-dk); }
-.step-btn:disabled { opacity: 0.35; cursor: default; }
+.step-btn:disabled { opacity: 0.3; cursor: default; }
 
 .step-count {
-    min-width: 2ch;
+    min-width: 1.5ch;
     text-align: center;
     font-family: var(--font-display);
-    font-size: 1.15rem;
+    font-size: 1.5rem;
     color: var(--green-dk);
+}
+
+.step-suffix {
+    font-family: var(--font-body);
+    font-style: italic;
+    color: var(--green-md);
+    font-size: 0.95rem;
 }
 
 /* ─── Validation messages ────────────────────────────────── */

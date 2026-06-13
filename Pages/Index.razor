@@ -245,8 +245,8 @@
             }
             else
             {
-                <h2 class="modal-title">✦ &nbsp; RSVP</h2>
-                <p class="modal-subtitle">Kindly let us know if you'll be joining us</p>
+                <h2 class="modal-title">RSVP</h2>
+                <p class="modal-subtitle">Will you be celebrating with us?</p>
 
                 <EditForm Model="_rsvp" OnValidSubmit="HandleRsvpSubmit">
                     <DataAnnotationsValidator />
@@ -255,21 +255,19 @@
                         <button type="button"
                                 class="attend-card @(_rsvp.Attending == "yes" ? "is-selected" : "")"
                                 @onclick="@(() => { _rsvp.Attending = "yes"; })">
-                            <span class="attend-icon">✦</span>
-                            <span class="attend-label">Joyfully Accepts</span>
-                            <span class="attend-sub">I'll be there</span>
+                            <span class="attend-icon">✓</span>
+                            <span class="attend-label">Yes, I'll be there</span>
                         </button>
                         <button type="button"
                                 class="attend-card @(_rsvp.Attending == "no" ? "is-selected" : "")"
                                 @onclick="@(() => { _rsvp.Attending = "no"; })">
                             <span class="attend-icon">♡</span>
-                            <span class="attend-label">Regretfully Declines</span>
-                            <span class="attend-sub">Can't make it</span>
+                            <span class="attend-label">Can't make it</span>
                         </button>
                     </div>
 
                     <div class="form-field">
-                        <label>Full Name</label>
+                        <label>Your Name</label>
                         <InputText @bind-Value="_rsvp.FullName" placeholder="Your full name" />
                         <ValidationMessage For="@(() => _rsvp.FullName)" />
                     </div>
@@ -277,18 +275,19 @@
                     @if (_rsvp.Attending == "yes")
                     {
                         <div class="form-field">
-                            <label>Number of Guests</label>
+                            <label>How many of you?</label>
                             <div class="guest-stepper">
                                 <button type="button" class="step-btn" @onclick="DecGuests" disabled="@(_rsvp.GuestCount <= 1)">−</button>
                                 <span class="step-count">@_rsvp.GuestCount</span>
                                 <button type="button" class="step-btn" @onclick="IncGuests" disabled="@(_rsvp.GuestCount >= 10)">+</button>
+                                <span class="step-suffix">@(_rsvp.GuestCount == 1 ? "guest" : "guests")</span>
                             </div>
                         </div>
                     }
 
                     <div class="form-field">
                         <label>Note <span class="optional">(optional)</span></label>
-                        <InputTextArea @bind-Value="_rsvp.Note" placeholder="Any message or dietary requirements…" rows="2" />
+                        <InputTextArea @bind-Value="_rsvp.Note" placeholder="Anything you'd like us to know…" rows="2" />
                     </div>
 
                     @if (_rsvpError)
