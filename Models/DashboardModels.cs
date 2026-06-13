@@ -17,6 +17,15 @@ public class AnalyticsRow
     [JsonPropertyName("Screen")]        public string Screen    { get; set; } = "";
 }
 
+public class RsvpRow
+{
+    [JsonPropertyName("Timestamp")]   public string Timestamp  { get; set; } = "";
+    [JsonPropertyName("Full Name")]   public string FullName   { get; set; } = "";
+    [JsonPropertyName("Attending")]   public string Attending  { get; set; } = "";
+    [JsonPropertyName("Guest Count")] public string GuestCount { get; set; } = "";
+    [JsonPropertyName("Note")]        public string Note       { get; set; } = "";
+}
+
 public class SongRow
 {
     [JsonPropertyName("Timestamp")]     public string Timestamp { get; set; } = "";

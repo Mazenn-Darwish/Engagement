@@ -50,6 +50,10 @@ else
         </header>
 
         <nav class="db-tabs" role="tablist">
+            <button class="db-tab @(_tab=="rsvps" ? "db-tab--active" : "")" @onclick='()=>SetTab("rsvps")'>
+                RSVPs
+                @if (_rsvps != null) { <span class="db-badge">@_rsvps.Count</span> }
+            </button>
             <button class="db-tab @(_tab=="analytics" ? "db-tab--active" : "")" @onclick='()=>SetTab("analytics")'>
                 Analytics
                 @if (_analytics != null) { <span class="db-badge">@_analytics.Count</span> }
@@ -70,8 +74,80 @@ else
 
         <div class="db-body">
 
+            @* ── RSVPs ─────────────────────────────────────────────── *@
+            @if (_tab == "rsvps")
+            {
+                @if (_rsvps == null)
+                {
+                    <div class="db-spinner"><div class="loading-dots"><span></span><span></span><span></span></div></div>
+                }
+                else
+                {
+                    <div class="db-stats">
+                        <div class="db-stat-card">
+                            <span class="db-stat-val">@AttendingCount</span>
+                            <span class="db-stat-lbl">Accepted</span>
+                        </div>
+                        <div class="db-stat-card">
+                            <span class="db-stat-val">@TotalGuests</span>
+                            <span class="db-stat-lbl">Total Guests</span>
+                        </div>
+                        <div class="db-stat-card">
+                            <span class="db-stat-val">@DecliningCount</span>
+                            <span class="db-stat-lbl">Declined</span>
+                        </div>
+                        <div class="db-stat-card">
+                            <span class="db-stat-val">@_rsvps.Count</span>
+                            <span class="db-stat-lbl">Responses</span>
+                        </div>
+                    </div>
+
+                    @if (_rsvps.Count == 0)
+                    {
+                        <p class="db-empty">No RSVPs yet.</p>
+                    }
+                    else
+                    {
+                        <div class="db-table-wrap">
+                            <table class="db-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Name</th>
+                                        <th>Attending</th>
+                                        <th>Guests</th>
+                                        <th>Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var r in _rsvps)
+                                    {
+                                        <tr>
+                                            <td>@r.Timestamp</td>
+                                            <td>@r.FullName</td>
+                                            <td>
+                                                @if (IsYes(r.Attending))
+                                                {
+                                                    <span class="db-pill db-pill--yes">Joining</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="db-pill db-pill--no">Can't make it</span>
+                                                }
+                                            </td>
+                                            <td>@(IsYes(r.Attending) ? r.GuestCount : "—")</td>
+                                            <td>@r.Note</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            }
+
             @* ── Analytics ─────────────────────────────────────────── *@
-            @if (_tab == "analytics")
+            else if (_tab == "analytics")
             {
                 <div class="db-stats">
                     <div class="db-stat-card">
@@ -246,12 +322,20 @@ else
     private bool   _authLoading;
     private bool   _authError;
     private string _adminKey  = "";
-    private string _tab       = "analytics";
+    private string _tab       = "rsvps";
 
+    private List<RsvpRow>?      _rsvps;
     private List<AnalyticsRow>? _analytics;
     private List<SongRow>?      _songs;
     private List<BlessingRow>?  _blessings;
     private List<GuestbookRow>? _guestbook;
+
+    // ── RSVP stats ────────────────────────────────────────────
+    private static bool IsYes(string a) => a.Equals("yes", StringComparison.OrdinalIgnoreCase);
+    private int AttendingCount => _rsvps?.Count(r => IsYes(r.Attending)) ?? 0;
+    private int DecliningCount => _rsvps?.Count(r => !IsYes(r.Attending)) ?? 0;
+    private int TotalGuests    => _rsvps?.Where(r => IsYes(r.Attending))
+        .Sum(r => int.TryParse(r.GuestCount, out var n) ? n : 0) ?? 0;
 
     // ── Computed stats ────────────────────────────────────────
     private int    TotalVisits    => _analytics?.Count ?? 0;
@@ -300,6 +384,8 @@ else
 
     private async Task LoadRemainingAsync()
     {
+        _rsvps     = await DashboardSvc.GetRsvpsAsync(_adminKey);
+        await InvokeAsync(StateHasChanged);
         _songs     = await DashboardSvc.GetSongsAsync(_adminKey);
         _blessings = await DashboardSvc.GetBlessingsAsync(_adminKey);
         _guestbook = await DashboardSvc.GetGuestbookAsync(_adminKey);
