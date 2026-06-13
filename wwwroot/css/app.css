@@ -88,6 +88,65 @@ html, body {
     margin: auto 0;           /* centers when it fits; no top-clip when it doesn't */
 }
 
+/* ─── Scroll-reveal ──────────────────────────────────────── */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    will-change: opacity, transform;
+}
+.reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* ─── Scroll-down hint ───────────────────────────────────── */
+.scroll-hint {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--green-md);
+    font-family: var(--font-display);
+    font-size: 0.6rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+    opacity: 0.85;
+    transition: opacity 0.5s ease;
+    animation: hintBob 1.9s ease-in-out infinite;
+}
+.scroll-hint-chevron { font-size: 1.15rem; line-height: 0.5; }
+.scroll-hint--hidden { opacity: 0; pointer-events: none; }
+
+@keyframes hintBob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(5px); }
+}
+
+/* ─── Hero name entrance ─────────────────────────────────── */
+.name { animation: nameSettle 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.names .name:nth-child(3) { animation-delay: 0.16s; }
+.ampersand { animation: ampFade 0.9s ease 0.34s both; }
+
+@keyframes nameSettle {
+    from { opacity: 0; transform: translateY(16px); letter-spacing: 0.14em; }
+    to   { opacity: 1; transform: translateY(0);    letter-spacing: normal; }
+}
+@keyframes ampFade {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .scroll-hint { animation: none; }
+    .name, .ampersand { animation: none; }
+}
+
 /* ─── Bismillah ──────────────────────────────────────────── */
 .bismillah {
     font-family: var(--font-arabic);
@@ -155,7 +214,37 @@ html, body {
     text-align: center;
 }
 
-/* ─── Couple photo ───────────────────────────────────────── */
+/* ─── Couple photo + decorative frame ────────────────────── */
+.photo-frame {
+    position: relative;
+    display: inline-flex;
+    padding: 10px;
+}
+
+/* Thin outer ring with a gap from the photo */
+.photo-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(45, 90, 39, 0.42);
+    pointer-events: none;
+}
+
+/* Pendant diamond resting on the bottom of the ring */
+.photo-frame::after {
+    content: "◆";
+    position: absolute;
+    left: 50%;
+    bottom: -4px;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--green-dk);
+    background: var(--bg);
+    padding: 0 0.35rem;
+    opacity: 0.85;
+}
+
 .couple-photo {
     width: clamp(140px, 26vw, 300px);
     height: clamp(140px, 26vw, 300px);
@@ -804,6 +893,7 @@ html, body {
 
 .rsvp-panel {
     position: relative;
+    overflow: hidden;
     width: min(440px, 92vw);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.28));
     border: 1px solid var(--border);
@@ -812,6 +902,18 @@ html, body {
     box-shadow: 0 14px 38px rgba(45, 90, 39, 0.12);
     text-align: center;
 }
+
+/* Botanical sprigs echoing the page's corner art */
+.rsvp-sprig {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    pointer-events: none;
+    z-index: 0;
+}
+.rsvp-sprig--tl { top: 4px; left: 4px; }
+.rsvp-sprig--br { bottom: 4px; right: 4px; transform: rotate(180deg); }
+.rsvp-panel > *:not(.rsvp-sprig) { position: relative; z-index: 1; }
 
 /* Inset double-frame line for an engraved-invitation feel */
 .rsvp-panel::after {
@@ -831,8 +933,8 @@ html, body {
     margin-bottom: 0.5rem;
 }
 
-.rsvp-panel .modal-title { margin-bottom: 0.55rem; }
-.rsvp-panel .modal-subtitle { margin-top: 0; margin-bottom: 1.8rem; }
+.rsvp-panel .modal-title { margin-bottom: 0.9rem; }
+.rsvp-panel .modal-subtitle { margin-top: 0; margin-bottom: 2rem; }
 .rsvp-panel .form-field { text-align: left; }
 
 /* Softer filled inputs that read as a card form rather than bare underlines */

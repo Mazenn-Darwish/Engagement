@@ -153,12 +153,12 @@
 <main class="hero">
     <div class="hero-content">
 
-        <p class="bismillah" lang="ar" dir="rtl">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
+        <p class="bismillah reveal" lang="ar" dir="rtl">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
 
-        <p class="invite-love">We Would love to have you at our</p>
-        <h1 class="engagement-word">ENGAGEMENT!</h1>
+        <p class="invite-love reveal">We Would love to have you at our</p>
+        <h1 class="engagement-word reveal">ENGAGEMENT!</h1>
 
-        <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+        <div class="ornament reveal">✦ &nbsp; ✦ &nbsp; ✦</div>
 
         <div class="names">
             <span class="name">Mazen</span>
@@ -166,17 +166,19 @@
             <span class="name">Doha</span>
         </div>
 
-        <img src="couple3.jpg" alt="Mazen & Doha" class="couple-photo" />
+        <div class="photo-frame reveal">
+            <img src="couple3.jpg" alt="Mazen & Doha" class="couple-photo" />
+        </div>
 
-        <div class="divider">
+        <div class="divider reveal">
             <span class="divider-line"></span>
             <span class="diamond">◆</span>
             <span class="divider-line"></span>
         </div>
 
-        <p class="getting-engaged">are getting engaged</p>
+        <p class="getting-engaged reveal">are getting engaged</p>
 
-        <div class="countdown">
+        <div class="countdown reveal">
             <div class="countdown-unit">
                 <span class="count">@_days</span>
                 <span class="unit-label">Days</span>
@@ -198,9 +200,9 @@
             </div>
         </div>
 
-        <p class="date-line">11 &nbsp;·&nbsp; September &nbsp;·&nbsp; 2026</p>
+        <p class="date-line reveal">11 &nbsp;·&nbsp; September &nbsp;·&nbsp; 2026</p>
 
-        <div class="venue">
+        <div class="venue reveal">
             <p class="venue-time">AT 7:00 PM</p>
             <p class="venue-name">Villa Le Mariage</p>
             <p class="venue-address">Cortoba Street, King Mariout</p>
@@ -210,16 +212,21 @@
             </a>
         </div>
 
-        <button class="calendar-btn" @onclick="DownloadCalendar">+ Add to Calendar</button>
+        <button class="calendar-btn reveal" @onclick="DownloadCalendar">+ Add to Calendar</button>
 
-        <div class="action-row">
+        <div class="action-row reveal">
             <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenSongModal">♪ &nbsp; Suggest a Song</button>
             <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenCommentModal">✦ &nbsp; Leave us a comment!</button>
             <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenSigModal">✒ &nbsp; Sign the Guestbook</button>
         </div>
 
+        <button type="button" class="scroll-hint" @onclick='() => JS.InvokeVoidAsync("scrollToEl", "rsvp")'>
+            <span class="scroll-hint-text">RSVP below</span>
+            <span class="scroll-hint-chevron">⌄</span>
+        </button>
+
         <!-- ── Inline RSVP (always visible at the bottom) ─────────── -->
-        <section class="rsvp-inline" id="rsvp">
+        <section class="rsvp-inline reveal" id="rsvp">
             <div class="divider">
                 <span class="divider-line"></span>
                 <span class="diamond">◆</span>
@@ -227,6 +234,23 @@
             </div>
 
             <div class="rsvp-panel">
+                <svg class="rsvp-sprig rsvp-sprig--tl" viewBox="0 0 60 60" fill="none" aria-hidden="true">
+                    <g stroke="#2d5a27" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+                        <path d="M6,6 C20,14 34,28 46,46" stroke-width="1"/>
+                        <path d="M18,14 Q30,6 34,20 Q22,24 18,14Z" fill="#4a7c42" fill-opacity="0.4" stroke-width="0.6"/>
+                        <path d="M10,28 Q2,38 12,44 Q22,34 10,28Z" fill="#4a7c42" fill-opacity="0.35" stroke-width="0.6"/>
+                        <circle cx="6" cy="6" r="2" fill="#2d5a27" fill-opacity="0.6" stroke="none"/>
+                    </g>
+                </svg>
+                <svg class="rsvp-sprig rsvp-sprig--br" viewBox="0 0 60 60" fill="none" aria-hidden="true">
+                    <g stroke="#2d5a27" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+                        <path d="M6,6 C20,14 34,28 46,46" stroke-width="1"/>
+                        <path d="M18,14 Q30,6 34,20 Q22,24 18,14Z" fill="#4a7c42" fill-opacity="0.4" stroke-width="0.6"/>
+                        <path d="M10,28 Q2,38 12,44 Q22,34 10,28Z" fill="#4a7c42" fill-opacity="0.35" stroke-width="0.6"/>
+                        <circle cx="6" cy="6" r="2" fill="#2d5a27" fill-opacity="0.6" stroke="none"/>
+                    </g>
+                </svg>
+
                 @if (_rsvpSubmitted)
                 {
                     <div class="thank-you">
@@ -642,6 +666,11 @@
             try { await JS.InvokeVoidAsync("hideLoader");  } catch { }
             try { await JS.InvokeVoidAsync("countVisit");  } catch { }
         }
+        if (!_envelopeVisible && !_heroRevealInit)
+        {
+            _heroRevealInit = true;
+            try { await JS.InvokeVoidAsync("initScrollReveal"); } catch { }
+        }
         if (_sigOpen && !_sigCanvasReady)
         {
             _sigCanvasReady = true;
@@ -653,6 +682,8 @@
             try { await JS.InvokeVoidAsync("initSongSearchInput", _dotnetRef); } catch { }
         }
     }
+
+    private bool _heroRevealInit;
 
     private void UpdateCountdown()
     {
