@@ -290,8 +290,16 @@
                 var e = document.querySelector('.env');
                 return e && e.classList.contains('env--opening');
             }
-            function set(rx, ry) {
+            // Drive the tilt — disable the CSS idle sway so the inline transform wins
+            // (CSS animations override inline styles otherwise).
+            function drive(rx, ry) {
+                tilt.style.animation = 'none';
                 tilt.style.transform = 'perspective(900px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+            }
+            // Hand control back to the idle sway.
+            function release() {
+                tilt.style.transform = '';
+                tilt.style.animation = '';
             }
 
             overlay.addEventListener('pointermove', function (e) {
@@ -299,19 +307,22 @@
                 var r  = overlay.getBoundingClientRect();
                 var dx = (e.clientX - r.left) / r.width  - 0.5;
                 var dy = (e.clientY - r.top)  / r.height - 0.5;
-                set(-dy * MAX * 2, dx * MAX * 2);
+                drive(-dy * MAX * 2, dx * MAX * 2);
             });
-            overlay.addEventListener('pointerleave', function () {
-                if (!isOpening()) set(0, 0);
+            ['pointerleave', 'pointerup', 'pointercancel'].forEach(function (ev) {
+                overlay.addEventListener(ev, function () { if (!isOpening()) release(); });
             });
 
-            // Android gyroscope — no permission gate (unlike iOS)
+            // Android (and any browser without the iOS permission gate) — live gyro.
+            // iOS 13+ requires a permission prompt tied to a user gesture, but the only
+            // gesture here opens the envelope, so requesting it would pop a system dialog
+            // mid-open. Instead, iOS gets the continuous CSS idle sway + touch-drag tilt.
             if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission !== 'function') {
                 window.addEventListener('deviceorientation', function (e) {
                     if (isOpening() || e.gamma == null || e.beta == null) return;
                     var ry = Math.max(-MAX, Math.min(MAX, e.gamma / 4));
                     var rx = Math.max(-MAX, Math.min(MAX, (e.beta - 45) / 6));
-                    set(-rx, ry);
+                    drive(-rx, ry);
                 });
             }
         }
