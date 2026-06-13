@@ -831,7 +831,8 @@ html, body {
     margin-bottom: 0.5rem;
 }
 
-.rsvp-panel .modal-title { margin-bottom: 0.25rem; }
+.rsvp-panel .modal-title { margin-bottom: 0.55rem; }
+.rsvp-panel .modal-subtitle { margin-top: 0; margin-bottom: 1.8rem; }
 .rsvp-panel .form-field { text-align: left; }
 
 /* Softer filled inputs that read as a card form rather than bare underlines */
