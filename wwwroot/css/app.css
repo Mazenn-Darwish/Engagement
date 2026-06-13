@@ -13,10 +13,6 @@
     --text:         #1a1a1a;
     --text-green:   #2d5a27;
     --red-err:      #b03030;
-    --gold:         #b08a4a;
-    --gold-dk:      #8a6a32;
-    /* Metallic gold foil: dark lowlights → bright highlights for a leaf-gilded sheen */
-    --gold-foil:    linear-gradient(135deg, #7c5e2a 0%, #b8924a 18%, #e8cf86 34%, #fff4cf 46%, #d8b35c 58%, #a87f36 74%, #e8cf86 88%, #8a6a32 100%);
     --font-display: 'Cinzel', serif;
     --font-script:  'Great Vibes', cursive;
     --font-body:    'Cormorant Garamond', serif;
@@ -124,37 +120,11 @@ html, body {
 }
 
 /* ─── Ornament ───────────────────────────────────────────── */
-/* ─── Gold foil text utility ─────────────────────────────── */
-.gold-foil,
-.name,
-.ampersand,
-.venue-name,
-.date-line {
-    background: var(--gold-foil);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    text-shadow: 0 1px 1px rgba(120, 92, 44, 0.18);
-    animation: foilShimmer 7s ease-in-out infinite;
-}
-
-@keyframes foilShimmer {
-    0%, 100% { background-position: 0% center; }
-    50%      { background-position: 100% center; }
-}
-
 .ornament {
     font-size: clamp(0.65rem, 1.3vw, 0.85rem);
     letter-spacing: 0.55em;
-    background: var(--gold-foil);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    opacity: 0.95;
+    color: var(--green-md);
+    opacity: 0.75;
 }
 
 /* ─── Names ──────────────────────────────────────────────── */
@@ -169,13 +139,16 @@ html, body {
 .name {
     font-family: var(--font-script);
     font-size: clamp(3.2rem, 10vw, 6.8rem);
+    color: var(--green-dk);
     line-height: 1.1;
     font-weight: 400;
+    text-shadow: 0 1px 0 rgba(45, 90, 39, 0.1);
 }
 
 .ampersand {
     font-family: var(--font-script);
     font-size: clamp(2.4rem, 6.5vw, 5rem);
+    color: var(--green-md);
     line-height: 0.9;
     font-weight: 400;
     display: block;
@@ -216,16 +189,16 @@ html, body {
 .divider-line {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold) 38%, var(--gold-dk) 50%, var(--gold) 62%, transparent);
+    background: linear-gradient(90deg, transparent, var(--green-md) 40%, var(--green-dk) 50%, var(--green-md) 60%, transparent);
 }
 
 .diamond {
     font-size: 0.5rem;
-    color: var(--gold-dk);
+    color: var(--green-dk);
     transform: rotate(45deg);
     display: inline-block;
     line-height: 1;
-    opacity: 0.85;
+    opacity: 0.7;
 }
 
 /* ─── Getting engaged ────────────────────────────────────── */
@@ -290,6 +263,7 @@ html, body {
     font-family: var(--font-display);
     font-size: clamp(0.65rem, 1.5vw, 0.9rem);
     letter-spacing: 0.35em;
+    color: var(--green-dk);
     font-weight: 400;
 }
 
@@ -316,6 +290,7 @@ html, body {
 .venue-name {
     font-family: var(--font-script);
     font-size: clamp(1.3rem, 3.5vw, 2rem);
+    color: var(--green-dk);
     line-height: 1.2;
 }
 
@@ -358,6 +333,8 @@ html, body {
 
 /* ─── RSVP button ────────────────────────────────────────── */
 .rsvp-btn {
+    position: relative;
+    overflow: hidden;
     font-family: var(--font-display);
     font-size: clamp(0.65rem, 1.3vw, 0.8rem);
     letter-spacing: 0.32em;
@@ -371,6 +348,22 @@ html, body {
     transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
     box-shadow: 0 2px 16px rgba(45, 90, 39, 0.18);
 }
+
+/* Slow gold sheen that sweeps across on hover */
+.rsvp-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -130%;
+    width: 65%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 244, 207, 0.55), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.75s ease;
+    pointer-events: none;
+}
+
+.rsvp-btn:hover::before { left: 150%; }
 
 .rsvp-btn:hover {
     background: var(--green-md);
