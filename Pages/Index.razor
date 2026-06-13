@@ -325,12 +325,14 @@
                         @if (_rsvp.Attending == "yes")
                         {
                             <div class="form-field">
-                                <label>How many of you?</label>
-                                <div class="guest-stepper">
-                                    <button type="button" class="step-btn" @onclick="DecGuests" disabled="@(_rsvp.GuestCount <= 1)">−</button>
-                                    <span class="step-count">@_rsvp.GuestCount</span>
-                                    <button type="button" class="step-btn" @onclick="IncGuests" disabled="@(_rsvp.GuestCount >= 2)">+</button>
-                                    <span class="step-suffix">@(_rsvp.GuestCount == 1 ? "guest" : "guests")</span>
+                                <label>Will you bring a plus one?</label>
+                                <div class="yesno-choice">
+                                    <button type="button"
+                                            class="yesno-btn @(_rsvp.GuestCount == 2 ? "is-selected" : "")"
+                                            @onclick="@(() => { _rsvp.GuestCount = 2; })">Yes</button>
+                                    <button type="button"
+                                            class="yesno-btn @(_rsvp.GuestCount == 1 ? "is-selected" : "")"
+                                            @onclick="@(() => { _rsvp.GuestCount = 1; })">No</button>
                                 </div>
                             </div>
                         }
@@ -737,9 +739,6 @@
         _rsvpSubmitted = false;
         _rsvpError     = false;
     }
-
-    private void IncGuests() { if (_rsvp.GuestCount < 2) _rsvp.GuestCount++; }
-    private void DecGuests() { if (_rsvp.GuestCount > 1)  _rsvp.GuestCount--; }
 
     private async Task HandleRsvpSubmit()
     {
