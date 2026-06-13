@@ -358,8 +358,6 @@ html, body {
 
 /* ─── RSVP button ────────────────────────────────────────── */
 .rsvp-btn {
-    position: relative;
-    overflow: hidden;
     font-family: var(--font-display);
     font-size: clamp(0.65rem, 1.3vw, 0.8rem);
     letter-spacing: 0.32em;
@@ -373,22 +371,6 @@ html, body {
     transition: background 0.25s, transform 0.2s, box-shadow 0.25s;
     box-shadow: 0 2px 16px rgba(45, 90, 39, 0.18);
 }
-
-/* Slow gold sheen that sweeps across on hover */
-.rsvp-btn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -130%;
-    width: 65%;
-    height: 100%;
-    background: linear-gradient(100deg, transparent, rgba(255, 244, 207, 0.55), transparent);
-    transform: skewX(-20deg);
-    transition: left 0.75s ease;
-    pointer-events: none;
-}
-
-.rsvp-btn:hover::before { left: 150%; }
 
 .rsvp-btn:hover {
     background: var(--green-md);
