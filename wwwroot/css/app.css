@@ -1289,6 +1289,12 @@ html, body {
     animation: fadeSlideUp 0.9s ease-out 0.15s both;
 }
 
+/* tilt wrapper — JS rotates this toward pointer / device motion */
+.env-tilt {
+    transform: perspective(900px);
+    will-change: transform;
+}
+
 .env {
     width: clamp(250px, 78vw, 400px);
     height: clamp(169px, 53vw, 270px);
@@ -1385,15 +1391,31 @@ html, body {
     height: 62%;
     transform-origin: top center;
     transform: rotateX(0deg);
+    transform-style: preserve-3d;
     transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
-    backface-visibility: hidden;
     z-index: 2;
 }
 
-.env-flap svg {
+/* cream front face + patterned liner underside (two-sided) */
+.env-flap-face,
+.env-flap-liner {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+}
+
+.env-flap-face svg {
     width: 100%;
     height: 100%;
     display: block;
+}
+
+.env-flap-liner {
+    transform: rotateX(180deg);
+    clip-path: polygon(0% 0%, 100% 0%, 50% 89.3%);
+    background-color: #e7e0cf;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><g fill='none' stroke='%232d5a27' stroke-width='0.8' opacity='0.4'><path d='M20 5 Q27 14 20 21 Q13 14 20 5Z'/><path d='M20 35 Q27 26 20 19 Q13 26 20 35Z'/><path d='M5 20 Q14 27 21 20 Q14 13 5 20Z'/><path d='M35 20 Q26 27 19 20 Q26 13 35 20Z'/><circle cx='20' cy='20' r='1.5' fill='%232d5a27'/></g></svg>");
+    background-size: 20px 20px;
 }
 
 .env--opening .env-flap {
@@ -1429,10 +1451,22 @@ html, body {
     top: 0;
     width: 50%;
     height: 100%;
-    background: var(--green-dk);
+    /* radial sheen for a domed pressed-wax look */
+    background: radial-gradient(circle at 42% 30%, #4f8a44 0%, #2d5a27 56%, #20451c 100%);
 }
-.env-seal-half--l { left: 0;  border-radius: 999px 0 0 999px; box-shadow: inset 2px 0 3px rgba(0,0,0,0.18); }
-.env-seal-half--r { right: 0; border-radius: 0 999px 999px 0; box-shadow: inset -2px 0 3px rgba(0,0,0,0.18); }
+.env-seal-half--l {
+    left: 0;
+    border-radius: 999px 0 0 999px;
+    /* top-left highlight, bottom shadow = raised rim */
+    box-shadow: inset 2px 3px 5px rgba(255,255,255,0.18),
+                inset -1px -3px 6px rgba(0,0,0,0.34);
+}
+.env-seal-half--r {
+    right: 0;
+    border-radius: 0 999px 999px 0;
+    box-shadow: inset -2px 3px 5px rgba(255,255,255,0.13),
+                inset 1px -3px 6px rgba(0,0,0,0.34);
+}
 
 .env--opening .env-seal-half--l { animation: sealCrackL 0.55s ease 0.05s forwards; }
 .env--opening .env-seal-half--r { animation: sealCrackR 0.55s ease 0.05s forwards; }
@@ -1448,7 +1482,9 @@ html, body {
     justify-content: center;
     z-index: 2;
     font-family: var(--font-script);
-    color: var(--bg);
+    /* debossed monogram: translucent dark recess + light lower edge = pressed in */
+    color: rgba(18, 38, 14, 0.5);
+    text-shadow: 0 1px 0.5px rgba(210, 230, 200, 0.42);
     font-size: clamp(0.88rem, 2.1vw, 1.15rem);
     line-height: 1;
     white-space: nowrap;

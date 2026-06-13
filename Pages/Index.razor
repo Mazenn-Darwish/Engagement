@@ -120,6 +120,7 @@
     <div class="env-overlay @(_envelopeOpening ? "env-overlay--fading" : "")"
          @onclick="OpenEnvelope" @onkeydown="OnEnvKeyDown" role="button" tabindex="0" aria-label="Open invitation">
         <div class="env-scene">
+            <div class="env-tilt">
             <div class="env @(_envelopeOpening ? "env--opening" : "")">
                 <!-- envelope body with fold lines + addressing -->
                 <div class="env-body">
@@ -146,12 +147,15 @@
                     </div>
                 </div>
 
-                <!-- triangular flap — rotates back on open -->
+                <!-- triangular flap — cream face + patterned liner underside -->
                 <div class="env-flap">
-                    <svg viewBox="0 0 402 168" preserveAspectRatio="none" aria-hidden="true">
-                        <polygon points="0,0 402,0 201,150"
-                                 fill="#f5efe6" stroke="#2d5a27" stroke-width="1.5" stroke-linejoin="round"/>
-                    </svg>
+                    <div class="env-flap-face">
+                        <svg viewBox="0 0 402 168" preserveAspectRatio="none" aria-hidden="true">
+                            <polygon points="0,0 402,0 201,150"
+                                     fill="#f5efe6" stroke="#2d5a27" stroke-width="1.5" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="env-flap-liner"></div>
                 </div>
 
                 <!-- wax seal — two halves that crack apart on open -->
@@ -160,6 +164,7 @@
                     <span class="env-seal-half env-seal-half--r"></span>
                     <span class="env-seal-text">M ✦ D</span>
                 </div>
+            </div>
             </div>
 
             <!-- the invitation card that slides up out of the envelope -->
@@ -699,6 +704,7 @@
             try { await JS.InvokeVoidAsync("initPetals");  } catch { }
             try { await JS.InvokeVoidAsync("hideLoader");  } catch { }
             try { await JS.InvokeVoidAsync("countVisit");  } catch { }
+            try { await JS.InvokeVoidAsync("initEnvelopeTilt"); } catch { }
         }
         if (!_envelopeVisible && !_heroRevealInit)
         {

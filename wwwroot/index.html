@@ -276,6 +276,46 @@
             });
         }
 
+        // ── Envelope tilt parallax (pointer on desktop, gyroscope on Android) ──
+        function initEnvelopeTilt() {
+            var tilt    = document.querySelector('.env-tilt');
+            var overlay = document.querySelector('.env-overlay');
+            if (!tilt || !overlay) return;
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            var MAX = 9;
+            tilt.style.transition = 'transform 0.2s ease-out';
+
+            function isOpening() {
+                var e = document.querySelector('.env');
+                return e && e.classList.contains('env--opening');
+            }
+            function set(rx, ry) {
+                tilt.style.transform = 'perspective(900px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+            }
+
+            overlay.addEventListener('pointermove', function (e) {
+                if (isOpening()) return;
+                var r  = overlay.getBoundingClientRect();
+                var dx = (e.clientX - r.left) / r.width  - 0.5;
+                var dy = (e.clientY - r.top)  / r.height - 0.5;
+                set(-dy * MAX * 2, dx * MAX * 2);
+            });
+            overlay.addEventListener('pointerleave', function () {
+                if (!isOpening()) set(0, 0);
+            });
+
+            // Android gyroscope — no permission gate (unlike iOS)
+            if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission !== 'function') {
+                window.addEventListener('deviceorientation', function (e) {
+                    if (isOpening() || e.gamma == null || e.beta == null) return;
+                    var ry = Math.max(-MAX, Math.min(MAX, e.gamma / 4));
+                    var rx = Math.max(-MAX, Math.min(MAX, (e.beta - 45) / 6));
+                    set(-rx, ry);
+                });
+            }
+        }
+
         // ── Scroll-reveal: fade + rise blocks as they enter view ──
         function initScrollReveal() {
             var els = document.querySelectorAll('.reveal');
