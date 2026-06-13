@@ -117,10 +117,11 @@
 <!-- Envelope intro screen -->
 @if (_envelopeVisible)
 {
-    <div class="env-overlay @(_envelopeOpening ? "env-overlay--fading" : "")" @onclick="OpenEnvelope" role="button" tabindex="0">
+    <div class="env-overlay @(_envelopeOpening ? "env-overlay--fading" : "")"
+         @onclick="OpenEnvelope" @onkeydown="OnEnvKeyDown" role="button" tabindex="0" aria-label="Open invitation">
         <div class="env-scene">
             <div class="env @(_envelopeOpening ? "env--opening" : "")">
-                <!-- envelope body with fold lines -->
+                <!-- envelope body with fold lines + addressing -->
                 <div class="env-body">
                     <svg viewBox="0 0 400 270" preserveAspectRatio="none" aria-hidden="true">
                         <polygon points="0,270 200,148 400,270"
@@ -130,7 +131,21 @@
                         <polygon points="400,0 400,270 200,148"
                                  fill="rgba(45,90,39,0.025)" stroke="rgba(45,90,39,0.15)" stroke-width="0.9"/>
                     </svg>
+
+                    <!-- handwritten addressing on the front -->
+                    <div class="env-address" aria-hidden="true">
+                        <span class="env-to">To our cherished guest</span>
+                        <span class="env-addr-line"></span>
+                        <span class="env-addr-line env-addr-line--short"></span>
+                    </div>
+
+                    <!-- postage stamp -->
+                    <div class="env-stamp" aria-hidden="true">
+                        <span class="env-stamp-orn">✦</span>
+                        <span class="env-stamp-label">M &amp; D</span>
+                    </div>
                 </div>
+
                 <!-- triangular flap — rotates back on open -->
                 <div class="env-flap">
                     <svg viewBox="0 0 402 168" preserveAspectRatio="none" aria-hidden="true">
@@ -138,12 +153,24 @@
                                  fill="#f5efe6" stroke="#2d5a27" stroke-width="1.5" stroke-linejoin="round"/>
                     </svg>
                 </div>
-                <!-- wax seal at the junction -->
+
+                <!-- wax seal — two halves that crack apart on open -->
                 <div class="env-seal" aria-hidden="true">
+                    <span class="env-seal-half env-seal-half--l"></span>
+                    <span class="env-seal-half env-seal-half--r"></span>
                     <span class="env-seal-text">M ✦ D</span>
                 </div>
             </div>
-            <p class="env-hint">Click to open</p>
+
+            <!-- the invitation card that slides up out of the envelope -->
+            <div class="env-card" aria-hidden="true">
+                <span class="env-card-orn">✦</span>
+                <span class="env-card-title">You're Invited</span>
+                <span class="env-card-names">Mazen &amp; Doha</span>
+                <span class="env-card-sub">are getting engaged</span>
+            </div>
+
+            <p class="env-hint">Tap to open</p>
         </div>
     </div>
 }
@@ -556,9 +583,16 @@
         if (_envelopeOpening) return;
         _envelopeOpening = true;
         StateHasChanged();
-        await Task.Delay(1750);
+        // Choreographed: seal cracks → flap opens → card pulls out → dissolve to hero
+        await Task.Delay(2350);
         _envelopeVisible = false;
         StateHasChanged();
+    }
+
+    private async Task OnEnvKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" || e.Key == " " || e.Key == "Spacebar")
+            await OpenEnvelope();
     }
 
     // ── RSVP (inline form) ────────────────────────────────
