@@ -10,7 +10,7 @@ public class RsvpModel
     [Required]
     public string Attending { get; set; } = "yes";
 
-    [Range(1, 10, ErrorMessage = "Please enter a number between 1 and 10.")]
+    [Range(1, 2, ErrorMessage = "Please enter a number between 1 and 2.")]
     public int GuestCount { get; set; } = 1;
 
     public string? Note { get; set; }
