@@ -213,97 +213,98 @@
         <button class="calendar-btn" @onclick="DownloadCalendar">+ Add to Calendar</button>
 
         <div class="action-row">
-            <button class="rsvp-btn" @onclick="OpenRsvpModal">✦ &nbsp; RSVP</button>
             <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenSongModal">♪ &nbsp; Suggest a Song</button>
             <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenCommentModal">✦ &nbsp; Leave us a comment!</button>
             <button class="rsvp-btn rsvp-btn--outline" @onclick="OpenSigModal">✒ &nbsp; Sign the Guestbook</button>
         </div>
 
+        <!-- ── Inline RSVP (always visible at the bottom) ─────────── -->
+        <section class="rsvp-inline" id="rsvp">
+            <div class="divider">
+                <span class="divider-line"></span>
+                <span class="diamond">◆</span>
+                <span class="divider-line"></span>
+            </div>
+
+            <div class="rsvp-panel">
+                @if (_rsvpSubmitted)
+                {
+                    <div class="thank-you">
+                        <p class="ty-ornament">✦</p>
+                        <h2>Thank you, @_rsvp.FullName!</h2>
+                        @if (_rsvp.Attending == "yes")
+                        {
+                            <p>We can't wait to celebrate with you ✦</p>
+                        }
+                        else
+                        {
+                            <p>You'll be missed — thank you for letting us know.</p>
+                        }
+                        <button class="rsvp-btn rsvp-btn--outline" @onclick="ResetRsvp" style="margin-top:1.4rem">Send another response</button>
+                    </div>
+                }
+                else
+                {
+                    <h2 class="modal-title">RSVP</h2>
+                    <p class="modal-subtitle">Will you be celebrating with us?</p>
+
+                    <EditForm Model="_rsvp" OnValidSubmit="HandleRsvpSubmit">
+                        <DataAnnotationsValidator />
+
+                        <div class="attend-choice">
+                            <button type="button"
+                                    class="attend-card @(_rsvp.Attending == "yes" ? "is-selected" : "")"
+                                    @onclick="@(() => { _rsvp.Attending = "yes"; })">
+                                <span class="attend-icon">✓</span>
+                                <span class="attend-label">Yes, I'll be there</span>
+                            </button>
+                            <button type="button"
+                                    class="attend-card @(_rsvp.Attending == "no" ? "is-selected" : "")"
+                                    @onclick="@(() => { _rsvp.Attending = "no"; })">
+                                <span class="attend-icon">♡</span>
+                                <span class="attend-label">Can't make it</span>
+                            </button>
+                        </div>
+
+                        <div class="form-field">
+                            <label>Your Name</label>
+                            <InputText @bind-Value="_rsvp.FullName" placeholder="Your full name" />
+                            <ValidationMessage For="@(() => _rsvp.FullName)" />
+                        </div>
+
+                        @if (_rsvp.Attending == "yes")
+                        {
+                            <div class="form-field">
+                                <label>How many of you?</label>
+                                <div class="guest-stepper">
+                                    <button type="button" class="step-btn" @onclick="DecGuests" disabled="@(_rsvp.GuestCount <= 1)">−</button>
+                                    <span class="step-count">@_rsvp.GuestCount</span>
+                                    <button type="button" class="step-btn" @onclick="IncGuests" disabled="@(_rsvp.GuestCount >= 2)">+</button>
+                                    <span class="step-suffix">@(_rsvp.GuestCount == 1 ? "guest" : "guests")</span>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="form-field">
+                            <label>Note <span class="optional">(optional)</span></label>
+                            <InputTextArea @bind-Value="_rsvp.Note" placeholder="Anything you'd like us to know…" rows="2" />
+                        </div>
+
+                        @if (_rsvpError)
+                        {
+                            <p class="submit-error">Something went wrong. Please try again.</p>
+                        }
+
+                        <button type="submit" class="rsvp-btn submit-btn" disabled="@_rsvpSubmitting">
+                            @(_rsvpSubmitting ? "Sending…" : "Send RSVP")
+                        </button>
+                    </EditForm>
+                }
+            </div>
+        </section>
+
     </div>
 </main>
-
-@if (_rsvpOpen)
-{
-    <div class="modal-overlay" @onclick="CloseRsvpModal">
-        <div class="modal-box" @onclick:stopPropagation="true">
-
-            @if (_rsvpSubmitted)
-            {
-                <div class="thank-you">
-                    <p class="ty-ornament">✦</p>
-                    <h2>Thank you, @_rsvp.FullName!</h2>
-                    @if (_rsvp.Attending == "yes")
-                    {
-                        <p>We can't wait to celebrate with you ✦</p>
-                    }
-                    else
-                    {
-                        <p>You'll be missed — thank you for letting us know.</p>
-                    }
-                    <button class="rsvp-btn" @onclick="CloseRsvpModal" style="margin-top:1.8rem">Close</button>
-                </div>
-            }
-            else
-            {
-                <h2 class="modal-title">RSVP</h2>
-                <p class="modal-subtitle">Will you be celebrating with us?</p>
-
-                <EditForm Model="_rsvp" OnValidSubmit="HandleRsvpSubmit">
-                    <DataAnnotationsValidator />
-
-                    <div class="attend-choice">
-                        <button type="button"
-                                class="attend-card @(_rsvp.Attending == "yes" ? "is-selected" : "")"
-                                @onclick="@(() => { _rsvp.Attending = "yes"; })">
-                            <span class="attend-icon">✓</span>
-                            <span class="attend-label">Yes, I'll be there</span>
-                        </button>
-                        <button type="button"
-                                class="attend-card @(_rsvp.Attending == "no" ? "is-selected" : "")"
-                                @onclick="@(() => { _rsvp.Attending = "no"; })">
-                            <span class="attend-icon">♡</span>
-                            <span class="attend-label">Can't make it</span>
-                        </button>
-                    </div>
-
-                    <div class="form-field">
-                        <label>Your Name</label>
-                        <InputText @bind-Value="_rsvp.FullName" placeholder="Your full name" />
-                        <ValidationMessage For="@(() => _rsvp.FullName)" />
-                    </div>
-
-                    @if (_rsvp.Attending == "yes")
-                    {
-                        <div class="form-field">
-                            <label>How many of you?</label>
-                            <div class="guest-stepper">
-                                <button type="button" class="step-btn" @onclick="DecGuests" disabled="@(_rsvp.GuestCount <= 1)">−</button>
-                                <span class="step-count">@_rsvp.GuestCount</span>
-                                <button type="button" class="step-btn" @onclick="IncGuests" disabled="@(_rsvp.GuestCount >= 2)">+</button>
-                                <span class="step-suffix">@(_rsvp.GuestCount == 1 ? "guest" : "guests")</span>
-                            </div>
-                        </div>
-                    }
-
-                    <div class="form-field">
-                        <label>Note <span class="optional">(optional)</span></label>
-                        <InputTextArea @bind-Value="_rsvp.Note" placeholder="Anything you'd like us to know…" rows="2" />
-                    </div>
-
-                    @if (_rsvpError)
-                    {
-                        <p class="submit-error">Something went wrong. Please try again.</p>
-                    }
-
-                    <button type="submit" class="rsvp-btn submit-btn" disabled="@_rsvpSubmitting">
-                        @(_rsvpSubmitting ? "Sending…" : "Send RSVP")
-                    </button>
-                </EditForm>
-            }
-
-        </div>
-    </div>
-}
 
 @if (_songOpen)
 {
@@ -537,8 +538,7 @@
         StateHasChanged();
     }
 
-    // ── RSVP modal ────────────────────────────────────────
-    private bool _rsvpOpen;
+    // ── RSVP (inline form) ────────────────────────────────
     private bool _rsvpSubmitted;
     private bool _rsvpSubmitting;
     private bool _rsvpError;
@@ -667,15 +667,12 @@
         }
     }
 
-    private void OpenRsvpModal()
+    private void ResetRsvp()
     {
         _rsvp          = new RsvpModel();
         _rsvpSubmitted = false;
         _rsvpError     = false;
-        _rsvpOpen      = true;
     }
-
-    private void CloseRsvpModal() => _rsvpOpen = false;
 
     private void IncGuests() { if (_rsvp.GuestCount < 2) _rsvp.GuestCount++; }
     private void DecGuests() { if (_rsvp.GuestCount > 1)  _rsvp.GuestCount--; }

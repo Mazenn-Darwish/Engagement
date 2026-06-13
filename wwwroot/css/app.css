@@ -792,6 +792,29 @@ html, body {
     flex-shrink: 0;
 }
 
+/* ─── Inline RSVP section ────────────────────────────────── */
+.rsvp-inline {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.8rem, 2vh, 1.4rem);
+    width: 100%;
+    margin-top: clamp(0.6rem, 2vh, 1.2rem);
+}
+
+.rsvp-panel {
+    width: min(440px, 92vw);
+    background: rgba(255, 255, 255, 0.34);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: clamp(1.4rem, 4vw, 2rem) clamp(1.2rem, 4vw, 1.8rem);
+    box-shadow: 0 10px 30px rgba(45, 90, 39, 0.1);
+    text-align: center;
+}
+
+.rsvp-panel .modal-title { margin-bottom: 0.2rem; }
+.rsvp-panel .form-field { text-align: left; }
+
 /* ─── RSVP attendance cards ──────────────────────────────── */
 .attend-choice {
     display: grid;
